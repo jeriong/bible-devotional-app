@@ -104,6 +104,19 @@
             cursor: not-allowed;
         }
         
+        /* 복사 버튼 */
+        .copy-button {
+            background-color: #28a745;
+            margin-top: 10px;
+            display: none; /* 초기에는 숨김 */
+        }
+        .copy-button:hover {
+            background-color: #218838;
+        }
+        .copy-button.copied {
+            background-color: #6c757d;
+        }
+        
         /* 섹션 제목 */
         h2 {
             margin-top: 0;
@@ -114,6 +127,9 @@
         }
         
         /* 묵상 영역 */
+        .devotional-container {
+            position: relative;
+        }
         .devotional {
             white-space: pre-wrap;
             line-height: 1.6;
@@ -124,6 +140,25 @@
         }
         strong {
             color: #366b96;
+        }
+        
+        /* 복사 성공 메시지 */
+        .copy-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .copy-message.show {
+            opacity: 1;
         }
         
         /* 반응형 레이아웃 */
@@ -199,8 +234,11 @@
             
             <div class="column">
                 <h2>오늘의 만나</h2>
-                <div id="devotional" class="devotional">
-                    날짜, 성경책, 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.
+                <div class="devotional-container">
+                    <div id="devotional" class="devotional">
+                        날짜, 성경책, 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.
+                    </div>
+                    <button id="copyButton" class="copy-button">📋 복사하기</button>
                 </div>
             </div>
         </div>
@@ -209,16 +247,22 @@
             <p>이 앱은 GitHub에서 호스팅되는 성경 데이터를 사용합니다.</p>
         </footer>
     </div>
+    
+    <!-- 복사 성공 메시지 -->
+    <div id="copyMessage" class="copy-message">클립보드에 복사되었습니다!</div>
 
     <script>
         // 전역 변수
         let bibleData = null;
+        let rawDevotionalText = ""; // 원본 텍스트 저장용 변수 추가
         const statusElement = document.getElementById('status');
         const dateSelect = document.getElementById('date');
         const bookSelect = document.getElementById('book');
         const chapterSelect = document.getElementById('chapter');
         const generateButton = document.getElementById('generateButton');
         const devotionalElement = document.getElementById('devotional');
+        const copyButton = document.getElementById('copyButton');
+        const copyMessage = document.getElementById('copyMessage');
         
         // GitHub에서 성경 데이터 로드
         async function loadBibleData() {
@@ -295,6 +339,7 @@
             dateSelect.addEventListener('change', checkFormValidity);
             chapterSelect.addEventListener('change', checkFormValidity);
             generateButton.addEventListener('click', generateDevotional);
+            copyButton.addEventListener('click', copyDevotionalText);
             
             // 초기 폼 상태 확인
             checkFormValidity();
@@ -403,9 +448,11 @@
                 
                 // 일요일인 경우
                 if (weekdayIndex === 0) {
-                    const devotional = `🍚오늘의 만나🍚 - ${dateStr}\n\n오늘은 일요일입니다.\n교회에서 예배드리고 말씀을 듣는 복된 날이 되시기 바랍니다.`;
+                    rawDevotionalText = `🍚오늘의 만나🍚 - ${dateStr}\n\n오늘은 일요일입니다.\n교회에서 예배드리고 말씀을 듣는 복된 날이 되시기 바랍니다.`;
                     
-                    devotionalElement.textContent = devotional;
+                    devotionalElement.textContent = rawDevotionalText;
+                    // 복사 버튼 표시
+                    copyButton.style.display = 'block';
                     return;
                 }
                 
@@ -413,7 +460,10 @@
                 const chapterData = bibleData[selectedBook][selectedChapter];
                 
                 if (!chapterData) {
-                    devotionalElement.textContent = `${selectedBook} ${selectedChapter}장의 데이터를 찾을 수 없습니다.`;
+                    rawDevotionalText = `${selectedBook} ${selectedChapter}장의 데이터를 찾을 수 없습니다.`;
+                    devotionalElement.textContent = rawDevotionalText;
+                    // 이 경우에는 복사 버튼 숨김
+                    copyButton.style.display = 'none';
                     return;
                 }
                 
@@ -427,34 +477,75 @@
                     verses.push(`${verseNum}. ${chapterData[verseNum.toString()]}`);
                 }
                 
-                // 묵상 내용 생성
-                let devotional = `🍚오늘의 만나🍚 - ${dateStr}\n\n`;
-                devotional += `${selectedBook} ${selectedChapter}장 입니다\n`;
-                devotional += "------------------------------------------------\n\n";
+                // 묵상 내용 생성 (원본 텍스트 저장)
+                rawDevotionalText = `🍚오늘의 만나🍚 - ${dateStr}\n\n`;
+                rawDevotionalText += `${selectedBook} ${selectedChapter}장 입니다\n`;
+                rawDevotionalText += "------------------------------------------------\n\n";
                 
-                devotional += `**${selectedBook} ${selectedChapter}장**\n\n`;
-                devotional += verses.join('\n\n') + '\n\n';
+                rawDevotionalText += `**${selectedBook} ${selectedChapter}장**\n\n`;
+                rawDevotionalText += verses.join('\n\n') + '\n\n';
                 
-                devotional += "------------------------------------------------\n\n";
-                devotional += "💌묵상방법(참고)💌\n";
-                devotional += "1. 시작기도🙏 후 말씀 읽기(천천히 깊게)\n\n\n";
-                devotional += "2. 묵상하기\n";
-                devotional += "👉나에게 묵상되는 말씀범위(구절)의 \"핵심제목<Keyword >\" 적어보기\n";
-                devotional += "👉\"핵심제목<Keyword >\" 에 맞는 묵상, 주님과의 약속/구체적 실천계획 세워보기\n\n\n";
-                devotional += "3. 마무리기도🙏 후 댓글로 묵상 나누기 (말씀구절/묵상/실천 등을 댓글로 달아 공유해주시면 좋습니다!)\n";
-                devotional += "------------------------------------------------";
+                rawDevotionalText += "------------------------------------------------\n\n";
+                rawDevotionalText += "💌묵상방법(참고)💌\n";
+                rawDevotionalText += "1. 시작기도🙏 후 말씀 읽기(천천히 깊게)\n\n\n";
+                rawDevotionalText += "2. 묵상하기\n";
+                rawDevotionalText += "👉나에게 묵상되는 말씀범위(구절)의 \"핵심제목<Keyword >\" 적어보기\n";
+                rawDevotionalText += "👉\"핵심제목<Keyword >\" 에 맞는 묵상, 주님과의 약속/구체적 실천계획 세워보기\n\n\n";
+                rawDevotionalText += "3. 마무리기도🙏 후 댓글로 묵상 나누기 (말씀구절/묵상/실천 등을 댓글로 달아 공유해주시면 좋습니다!)\n";
+                rawDevotionalText += "------------------------------------------------";
                 
-                // 텍스트에서 **로 감싸진 부분을 <strong> 태그로 변환
-                const formattedDevotional = devotional
+                // 텍스트에서 **로 감싸진 부분을 <strong> 태그로 변환 (화면 표시용)
+                const formattedDevotional = rawDevotionalText
                     .replace(/\n/g, '<br>')
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                 
                 devotionalElement.innerHTML = formattedDevotional;
                 
+                // 복사 버튼 표시
+                copyButton.style.display = 'block';
+                copyButton.textContent = '📋 복사하기';
+                copyButton.classList.remove('copied');
+                
             } catch (error) {
                 console.error('묵상 생성 중 오류 발생:', error);
                 devotionalElement.textContent = `오류 발생: ${error.message}`;
+                // 오류 시 복사 버튼 숨김
+                copyButton.style.display = 'none';
             }
+        }
+        
+        // 묵상 내용 복사 기능
+        function copyDevotionalText() {
+            if (!rawDevotionalText) return;
+            
+            // 클립보드에 복사
+            navigator.clipboard.writeText(rawDevotionalText)
+                .then(() => {
+                    // 성공 시 버튼 텍스트 변경
+                    copyButton.textContent = '✓ 복사됨';
+                    copyButton.classList.add('copied');
+                    
+                    // 성공 메시지 표시
+                    copyMessage.classList.add('show');
+                    setTimeout(() => {
+                        copyMessage.classList.remove('show');
+                    }, 2000);
+                    
+                    // 3초 후 버튼 텍스트 원복
+                    setTimeout(() => {
+                        copyButton.textContent = '📋 복사하기';
+                        copyButton.classList.remove('copied');
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('클립보드 복사 실패:', err);
+                    copyButton.textContent = '❌ 복사 실패';
+                    
+                    // 3초 후 버튼 텍스트 원복
+                    setTimeout(() => {
+                        copyButton.textContent = '📋 복사하기';
+                    }, 3000);
+                });
         }
         
         // 앱 시작
