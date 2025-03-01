@@ -601,7 +601,8 @@
                 
                 // 두 번째 성경 내용 (선택적)
                 if (secondSelectedBook && secondSelectedChapter && secondVerses.length > 0) {
-                    rawDevotionalText += '\n\n\n';
+                    rawDevotionalText += '\n\n';
+                    rawDevotionalText += "----------------------------------------\n\n";
                     rawDevotionalText += `**${secondSelectedBook} ${secondSelectedChapter}장**\n\n`;
                     rawDevotionalText += secondVerses.join('\n\n');
                 }
