@@ -226,6 +226,8 @@
                     </select>
                 </div>
                 
+                <button id="generateButton">묵상 생성하기</button>
+                
                 <hr style="margin: 20px 0; border-top: 1px dashed #ced4da;">
                 
                 <div class="form-group">
@@ -243,8 +245,6 @@
                         <!-- 장 옵션은 JavaScript로 채워집니다 -->
                     </select>
                 </div>
-                
-                <button id="generateButton">묵상 생성하기</button>
             </div>
             
             <div class="column">
@@ -522,11 +522,23 @@
                 
                 // 일요일이고 날짜가 선택된 경우
                 if (dateInfo && dateInfo.weekdayIndex === 0) {
-                    rawDevotionalText = `🍚오늘의 만나🍚 - ${dateInfo.formattedDate}\n\n오늘은 일요일입니다.\n교회에서 예배드리고 말씀을 듣는 복된 날이 되시기 바랍니다.`;
+                    rawDevotionalText = `🍚오늘의 만나🍚 - ${dateInfo.formattedDate}\n\n오늘은 일요일입니다.\n주일 전해지는 말씀으로 풍성한 하루 되시길 바랍니다.`;
                     
                     devotionalElement.textContent = rawDevotionalText;
                     // 복사 버튼 표시
                     copyButton.style.display = 'block';
+                    
+                    // 자동으로 클립보드에 복사
+                    navigator.clipboard.writeText(rawDevotionalText)
+                        .then(() => {
+                            copyButton.textContent = '✓ 복사됨';
+                            copyButton.classList.add('copied');
+                            showCopyMessage();
+                        })
+                        .catch(err => {
+                            console.error('클립보드 복사 실패:', err);
+                        });
+                    
                     return;
                 }
                 
@@ -629,6 +641,23 @@
                 copyButton.textContent = '📋 복사하기';
                 copyButton.classList.remove('copied');
                 
+                // 자동으로 클립보드에 복사
+                navigator.clipboard.writeText(rawDevotionalText)
+                    .then(() => {
+                        copyButton.textContent = '✓ 복사됨';
+                        copyButton.classList.add('copied');
+                        showCopyMessage();
+                        
+                        // 3초 후 버튼 텍스트 원복
+                        setTimeout(() => {
+                            copyButton.textContent = '📋 복사하기';
+                            copyButton.classList.remove('copied');
+                        }, 3000);
+                    })
+                    .catch(err => {
+                        console.error('클립보드 복사 실패:', err);
+                    });
+                
             } catch (error) {
                 console.error('묵상 생성 중 오류 발생:', error);
                 devotionalElement.textContent = `오류 발생: ${error.message}`;
@@ -649,10 +678,7 @@
                     copyButton.classList.add('copied');
                     
                     // 성공 메시지 표시
-                    copyMessage.classList.add('show');
-                    setTimeout(() => {
-                        copyMessage.classList.remove('show');
-                    }, 2000);
+                    showCopyMessage();
                     
                     // 3초 후 버튼 텍스트 원복
                     setTimeout(() => {
@@ -669,6 +695,14 @@
                         copyButton.textContent = '📋 복사하기';
                     }, 3000);
                 });
+        }
+        
+        // 복사 성공 메시지 표시
+        function showCopyMessage() {
+            copyMessage.classList.add('show');
+            setTimeout(() => {
+                copyMessage.classList.remove('show');
+            }, 2000);
         }
         
         // 앱 시작
