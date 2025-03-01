@@ -226,6 +226,24 @@
                     </select>
                 </div>
                 
+                <hr style="margin: 20px 0; border-top: 1px dashed #ced4da;">
+                
+                <div class="form-group">
+                    <label for="secondBook">4. 추가 성경책 선택 (선택사항):</label>
+                    <select id="secondBook">
+                        <option value="" selected>선택하지 않음</option>
+                        <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="secondChapter">5. 추가 장 선택 (선택사항):</label>
+                    <select id="secondChapter">
+                        <option value="" selected>선택하지 않음</option>
+                        <!-- 장 옵션은 JavaScript로 채워집니다 -->
+                    </select>
+                </div>
+                
                 <button id="generateButton">묵상 생성하기</button>
             </div>
             
@@ -256,6 +274,8 @@
         const dateInput = document.getElementById('date'); // date input으로 변경
         const bookSelect = document.getElementById('book');
         const chapterSelect = document.getElementById('chapter');
+        const secondBookSelect = document.getElementById('secondBook');
+        const secondChapterSelect = document.getElementById('secondChapter');
         const generateButton = document.getElementById('generateButton');
         const devotionalElement = document.getElementById('devotional');
         const copyButton = document.getElementById('copyButton');
@@ -339,10 +359,13 @@
         function initializeUI() {
             // 성경책 옵션 생성
             generateBookOptions();
+            generateSecondBookOptions();
             
             // 이벤트 리스너 연결
             bookSelect.addEventListener('change', updateChapterOptions);
             chapterSelect.addEventListener('change', checkFormValidity);
+            secondBookSelect.addEventListener('change', updateSecondChapterOptions);
+            secondChapterSelect.addEventListener('change', checkFormValidity);
             generateButton.addEventListener('click', generateDevotional);
             copyButton.addEventListener('click', copyDevotionalText);
             
@@ -350,22 +373,22 @@
             checkFormValidity();
         }
         
+        // 성경 66권 표준 목록
+        const standardBooks = [
+            '창세기', '출애굽기', '레위기', '민수기', '신명기', '여호수아', '사사기', '룻기',
+            '사무엘상', '사무엘하', '열왕기상', '열왕기하', '역대상', '역대하', '에스라', '느헤미야',
+            '에스더', '욥기', '시편', '잠언', '전도서', '아가', '이사야', '예레미야', '예레미야애가',
+            '에스겔', '다니엘', '호세아', '요엘', '아모스', '오바댜', '요나', '미가', '나훔', '하박국',
+            '스바냐', '학개', '스가랴', '말라기', '마태복음', '마가복음', '누가복음', '요한복음',
+            '사도행전', '로마서', '고린도전서', '고린도후서', '갈라디아서', '에베소서', '빌립보서',
+            '골로새서', '데살로니가전서', '데살로니가후서', '디모데전서', '디모데후서', '디도서',
+            '빌레몬서', '히브리서', '야고보서', '베드로전서', '베드로후서', '요한1서', '요한2서',
+            '요한3서', '유다서', '요한계시록'
+        ];
+        
         // 성경책 옵션 생성
         function generateBookOptions() {
             bookSelect.innerHTML = '<option value="" disabled selected>성경책을 선택하세요</option>';
-            
-            // 성경 66권 표준 목록
-            const standardBooks = [
-                '창세기', '출애굽기', '레위기', '민수기', '신명기', '여호수아', '사사기', '룻기',
-                '사무엘상', '사무엘하', '열왕기상', '열왕기하', '역대상', '역대하', '에스라', '느헤미야',
-                '에스더', '욥기', '시편', '잠언', '전도서', '아가', '이사야', '예레미야', '예레미야애가',
-                '에스겔', '다니엘', '호세아', '요엘', '아모스', '오바댜', '요나', '미가', '나훔', '하박국',
-                '스바냐', '학개', '스가랴', '말라기', '마태복음', '마가복음', '누가복음', '요한복음',
-                '사도행전', '로마서', '고린도전서', '고린도후서', '갈라디아서', '에베소서', '빌립보서',
-                '골로새서', '데살로니가전서', '데살로니가후서', '디모데전서', '디모데후서', '디도서',
-                '빌레몬서', '히브리서', '야고보서', '베드로전서', '베드로후서', '요한1서', '요한2서',
-                '요한3서', '유다서', '요한계시록'
-            ];
             
             // 데이터에 있는 성경책만 필터링
             const validBooks = standardBooks.filter(book => book in bibleData);
@@ -375,6 +398,21 @@
                 option.value = book;
                 option.textContent = book;
                 bookSelect.appendChild(option);
+            }
+        }
+        
+        // 두 번째 성경책 옵션 생성
+        function generateSecondBookOptions() {
+            secondBookSelect.innerHTML = '<option value="">선택하지 않음</option>';
+            
+            // 데이터에 있는 성경책만 필터링
+            const validBooks = standardBooks.filter(book => book in bibleData);
+            
+            for (const book of validBooks) {
+                const option = document.createElement('option');
+                option.value = book;
+                option.textContent = book;
+                secondBookSelect.appendChild(option);
             }
         }
         
@@ -403,11 +441,41 @@
             checkFormValidity();
         }
         
-        // 폼 상태 확인 - 날짜 선택 없이도 생성 가능하도록 수정
+        // 두 번째 장 옵션 업데이트
+        function updateSecondChapterOptions() {
+            secondChapterSelect.innerHTML = '<option value="">선택하지 않음</option>';
+            
+            const selectedBook = secondBookSelect.value;
+            if (!selectedBook || !bibleData[selectedBook]) {
+                return;
+            }
+            
+            // 장 번호를 정수로 변환하여 정렬
+            const chapters = Object.keys(bibleData[selectedBook])
+                .map(chapter => parseInt(chapter))
+                .sort((a, b) => a - b);
+            
+            for (const chapter of chapters) {
+                const option = document.createElement('option');
+                option.value = chapter;
+                option.textContent = `${chapter}장`;
+                secondChapterSelect.appendChild(option);
+            }
+            
+            // 폼 상태 확인
+            checkFormValidity();
+        }
+        
+        // 폼 상태 확인 - 날짜 선택 없이도 생성 가능하도록 수정, 두 번째 장 선택은 선택사항
         function checkFormValidity() {
-            // 성경책과 장만 필수로 설정
+            // 첫 번째 성경책과 장만 필수로 설정
             const isValid = bookSelect.value && chapterSelect.value;
-            generateButton.disabled = !isValid;
+            
+            // 두 번째 성경책 선택 시, 장도 선택해야 유효
+            const isSecondValid = !secondBookSelect.value || 
+                                (secondBookSelect.value && secondChapterSelect.value);
+            
+            generateButton.disabled = !(isValid && isSecondValid);
         }
         
         // 날짜 문자열 포맷 변환 (YYYY-MM-DD -> M/D(요일))
@@ -432,9 +500,17 @@
                 // 입력값 확인
                 const selectedBook = bookSelect.value;
                 const selectedChapter = chapterSelect.value;
+                const secondSelectedBook = secondBookSelect.value;
+                const secondSelectedChapter = secondChapterSelect.value;
                 
                 if (!selectedBook || !selectedChapter) {
                     alert('성경책과 장을 선택해주세요.');
+                    return;
+                }
+                
+                // 두 번째 성경책이 선택되었지만 장이 선택되지 않은 경우
+                if (secondSelectedBook && !secondSelectedChapter) {
+                    alert('두 번째 성경책을 선택한 경우 장도 선택해주세요.');
                     return;
                 }
                 
@@ -454,7 +530,7 @@
                     return;
                 }
                 
-                // 성경 구절 가져오기
+                // 첫 번째 성경 구절 가져오기
                 const chapterData = bibleData[selectedBook][selectedChapter];
                 
                 if (!chapterData) {
@@ -465,7 +541,21 @@
                     return;
                 }
                 
-                // 절 번호를 정수로 변환하여 정렬
+                // 두 번째 성경 구절 가져오기 (선택적)
+                let secondChapterData = null;
+                if (secondSelectedBook && secondSelectedChapter) {
+                    secondChapterData = bibleData[secondSelectedBook][secondSelectedChapter];
+                    
+                    if (!secondChapterData) {
+                        rawDevotionalText = `${secondSelectedBook} ${secondSelectedChapter}장의 데이터를 찾을 수 없습니다.`;
+                        devotionalElement.textContent = rawDevotionalText;
+                        // 이 경우에는 복사 버튼 숨김
+                        copyButton.style.display = 'none';
+                        return;
+                    }
+                }
+                
+                // 첫 번째 절 데이터 처리
                 const verses = [];
                 const sortedVerseNumbers = Object.keys(chapterData)
                     .map(verse => parseInt(verse))
@@ -473,6 +563,18 @@
                 
                 for (const verseNum of sortedVerseNumbers) {
                     verses.push(`${verseNum}. ${chapterData[verseNum.toString()]}`);
+                }
+                
+                // 두 번째 절 데이터 처리 (선택적)
+                const secondVerses = [];
+                if (secondChapterData) {
+                    const sortedSecondVerseNumbers = Object.keys(secondChapterData)
+                        .map(verse => parseInt(verse))
+                        .sort((a, b) => a - b);
+                    
+                    for (const verseNum of sortedSecondVerseNumbers) {
+                        secondVerses.push(`${verseNum}. ${secondChapterData[verseNum.toString()]}`);
+                    }
                 }
                 
                 // 묵상 내용 생성 (원본 텍스트 저장)
@@ -485,12 +587,26 @@
                     rawDevotionalText += `🍚오늘의 만나🍚\n\n`;
                 }
                 
-                rawDevotionalText += `${selectedBook} ${selectedChapter}장 입니다\n`;
+                // 선택된 성경책 정보 표시
+                if (secondSelectedBook && secondSelectedChapter) {
+                    rawDevotionalText += `${selectedBook} ${selectedChapter}장 및 ${secondSelectedBook} ${secondSelectedChapter}장 입니다\n`;
+                } else {
+                    rawDevotionalText += `${selectedBook} ${selectedChapter}장 입니다\n`;
+                }
                 rawDevotionalText += "------------------------------------------------\n\n";
                 
+                // 첫 번째 성경 내용
                 rawDevotionalText += `**${selectedBook} ${selectedChapter}장**\n\n`;
-                rawDevotionalText += verses.join('\n\n') + '\n\n';
+                rawDevotionalText += verses.join('\n\n');
                 
+                // 두 번째 성경 내용 (선택적)
+                if (secondSelectedBook && secondSelectedChapter && secondVerses.length > 0) {
+                    rawDevotionalText += '\n\n\n';
+                    rawDevotionalText += `**${secondSelectedBook} ${secondSelectedChapter}장**\n\n`;
+                    rawDevotionalText += secondVerses.join('\n\n');
+                }
+                
+                rawDevotionalText += '\n\n';
                 rawDevotionalText += "------------------------------------------------\n\n";
                 rawDevotionalText += "💌묵상방법(참고)💌\n";
                 rawDevotionalText += "1. 시작기도🙏 후 말씀 읽기(천천히 깊게)\n\n\n";
