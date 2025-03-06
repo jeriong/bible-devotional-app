@@ -547,7 +547,7 @@
             background-color: var(--primary-color);
         }
         
-        /* 코멘트 시스템 스타일 */
+        /* 묵상 시스템 스타일 */
         .comments-section {
             margin-top: 30px;
         }
@@ -704,117 +704,6 @@
             cursor: not-allowed;
         }
         
-        /* 달력 보기 관련 스타일 */
-        .calendar-view {
-            margin-top: 20px;
-        }
-        
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .month-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .month-title {
-            font-size: 18px;
-            font-weight: 500;
-        }
-        
-        .month-nav {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--white);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: all var(--transition-speed);
-        }
-        
-        .month-nav:hover {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-        
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 500;
-            padding: 10px 0;
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--white);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            position: relative;
-            transition: all var(--transition-speed);
-        }
-        
-        .calendar-day:hover {
-            background-color: rgba(70, 130, 180, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .calendar-day.active {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-dark);
-        }
-        
-        .calendar-day.other-month {
-            opacity: 0.4;
-        }
-        
-        .calendar-day.today {
-            border: 2px solid var(--primary-color);
-            font-weight: 700;
-        }
-        
-        .day-number {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        
-        .has-comment {
-            position: absolute;
-            bottom: 5px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--success-color);
-            border-radius: 50%;
-        }
-        
-        .has-devotional {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 10px;
-            color: var(--primary-color);
-        }
-        
         /* 반응형 스타일 */
         @media (max-width: 768px) {
             .container {
@@ -873,19 +762,6 @@
                 font-size: 11px;
             }
             
-            .calendar-grid {
-                gap: 4px;
-            }
-            
-            .calendar-day-header {
-                font-size: 14px;
-                padding: 5px 0;
-            }
-            
-            .day-number {
-                font-size: 14px;
-            }
-            
             /* Mobile Optimizations for Touch */
             select, input[type="date"], button, textarea {
                 font-size: 16px; /* Prevents iOS zoom on focus */
@@ -917,13 +793,13 @@
             }
             
             /* Improved tap feedback */
-            .button-touch, .calendar-day, .bible-book, .tab-btn {
+            .button-touch, .bible-book, .tab-btn {
                 -webkit-tap-highlight-color: transparent;
                 position: relative;
                 overflow: hidden;
             }
             
-            .button-touch::after, .calendar-day::after, .bible-book::after, .tab-btn::after {
+            .button-touch::after, .bible-book::after, .tab-btn::after {
                 content: '';
                 position: absolute;
                 top: 50%;
@@ -937,7 +813,7 @@
                 transform-origin: 50% 50%;
             }
             
-            .button-touch:active::after, .calendar-day:active::after, .bible-book:active::after, .tab-btn:active::after {
+            .button-touch:active::after, .bible-book:active::after, .tab-btn:active::after {
                 animation: ripple 0.4s ease-out;
             }
             
@@ -1030,10 +906,7 @@
                 <i class="fas fa-book-bible"></i>묵상 생성
             </button>
             <button class="tab-btn button-touch" data-tab="comments">
-                <i class="fas fa-comments"></i>오늘의 댓글
-            </button>
-            <button class="tab-btn button-touch" data-tab="calendar">
-                <i class="fas fa-calendar-alt"></i>달력 보기
+                <i class="fas fa-comments"></i>오늘의 묵상
             </button>
             <button class="tab-btn button-touch" data-tab="settings">
                 <i class="fas fa-cog"></i>설정
@@ -1144,9 +1017,9 @@
             </div>
         </div>
         
-        <!-- 댓글 탭 -->
+        <!-- 묵상 탭 -->
         <div id="commentsTab" class="tab-content">
-            <h2><i class="fas fa-comments"></i>오늘의 댓글</h2>
+            <h2><i class="fas fa-comments"></i>오늘의 묵상</h2>
             
             <div class="form-group">
                 <label for="commentDate">
@@ -1156,55 +1029,22 @@
             </div>
             
             <div class="comment-form">
-                <textarea id="commentInput" class="comment-input" placeholder="오늘의 묵상을 댓글로 나눠보세요. 말씀구절, 묵상 내용, 적용점 등을 자유롭게 공유해주세요."></textarea>
+                <textarea id="commentInput" class="comment-input" placeholder="오늘의 묵상을 기록해보세요. 말씀구절, 묵상 내용, 적용점 등을 자유롭게 작성해주세요."></textarea>
                 <button id="postCommentButton" class="button-touch">
-                    <i class="fas fa-paper-plane"></i> 댓글 게시하기
+                    <i class="fas fa-paper-plane"></i> 묵상 저장하기
                 </button>
             </div>
             
             <div class="comment-list" id="commentList">
-                <!-- 댓글은 JavaScript로 채워집니다 -->
+                <!-- 묵상 내용은 JavaScript로 채워집니다 -->
                 <div class="empty-comments">
                     <i class="fas fa-comment-slash" style="font-size: 24px; margin-bottom: 10px;"></i>
-                    <p>아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!</p>
+                    <p>아직 저장된 묵상이 없습니다. 첫 번째 묵상을 기록해보세요!</p>
                 </div>
             </div>
             
             <div class="comment-pagination" id="commentPagination">
                 <!-- 페이지네이션 버튼은 JavaScript로 채워집니다 -->
-            </div>
-        </div>
-        
-        <!-- 달력 보기 탭 -->
-        <div id="calendarTab" class="tab-content">
-            <h2><i class="fas fa-calendar-alt"></i>달력 보기</h2>
-            
-            <div class="calendar-view">
-                <div class="calendar-header">
-                    <div class="month-selector">
-                        <button id="prevMonth" class="month-nav button-touch">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div id="currentMonth" class="month-title">2025년 3월</div>
-                        <button id="nextMonth" class="month-nav button-touch">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="calendar-grid" id="calendarDaysHeader">
-                    <div class="calendar-day-header">일</div>
-                    <div class="calendar-day-header">월</div>
-                    <div class="calendar-day-header">화</div>
-                    <div class="calendar-day-header">수</div>
-                    <div class="calendar-day-header">목</div>
-                    <div class="calendar-day-header">금</div>
-                    <div class="calendar-day-header">토</div>
-                </div>
-                
-                <div class="calendar-grid" id="calendarDays">
-                    <!-- 달력 일자는 JavaScript로 채워집니다 -->
-                </div>
             </div>
         </div>
         
@@ -1257,11 +1097,7 @@
                 </a>
                 <a href="#" class="bottom-nav-item" data-tab="comments">
                     <i class="fas fa-comments"></i>
-                    <span>댓글</span>
-                </a>
-                <a href="#" class="bottom-nav-item" data-tab="calendar">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>달력</span>
+                    <span>기록</span>
                 </a>
                 <a href="#" class="bottom-nav-item" data-tab="settings">
                     <i class="fas fa-cog"></i>
@@ -1291,7 +1127,6 @@
         let savedDevotionals = {}; // 날짜별 저장된 묵상 내용
         let currentPage = 1;
         let commentsPerPage = 5;
-        let currentMonthDate = new Date();
         let darkMode = false;
         
         // DOM 요소
@@ -1311,10 +1146,6 @@
         const postCommentButton = document.getElementById('postCommentButton');
         const commentList = document.getElementById('commentList');
         const commentPagination = document.getElementById('commentPagination');
-        const calendarDays = document.getElementById('calendarDays');
-        const currentMonthElement = document.getElementById('currentMonth');
-        const prevMonthButton = document.getElementById('prevMonth');
-        const nextMonthButton = document.getElementById('nextMonth');
         const toggleBibleGridButton = document.getElementById('toggleBibleGrid');
         const bibleGridContainer = document.getElementById('bibleGridContainer');
         const oldTestamentGrid = document.getElementById('oldTestamentGrid');
@@ -1406,9 +1237,8 @@
                 // UI 초기화
                 initializeUI();
                 
-                // 댓글 로드 및 달력 설정
+                // 댓글 로드
                 loadComments();
-                renderCalendar();
                 
             } catch (error) {
                 console.error('데이터 로드 중 오류 발생:', error);
@@ -1449,9 +1279,8 @@
             // UI 초기화
             initializeUI();
             
-            // 댓글 로드 및 달력 설정
+            // 댓글 로드
             loadComments();
-            renderCalendar();
         }
         
         // 탭 변경 처리
@@ -1477,8 +1306,6 @@
                     // 탭별 특수 처리
                     if (tabId === 'comments') {
                         loadComments();
-                    } else if (tabId === 'calendar') {
-                        renderCalendar();
                     }
                 });
             });
@@ -1507,8 +1334,6 @@
                     // 탭별 특수 처리
                     if (tabId === 'comments') {
                         loadComments();
-                    } else if (tabId === 'calendar') {
-                        renderCalendar();
                     }
                 });
             });
@@ -1530,8 +1355,6 @@
             saveButton.addEventListener('click', saveDevotional);
             commentDateInput.addEventListener('change', loadComments);
             postCommentButton.addEventListener('click', postComment);
-            prevMonthButton.addEventListener('click', () => changeMonth(-1));
-            nextMonthButton.addEventListener('click', () => changeMonth(1));
             toggleBibleGridButton.addEventListener('click', toggleBibleGrid);
             fontSizeSlider.addEventListener('input', updateFontSize);
             exportDataButton.addEventListener('click', exportData);
@@ -1970,7 +1793,7 @@
                 rawDevotionalText += "2. 묵상하기\n";
                 rawDevotionalText += "👉나에게 묵상되는 말씀범위(구절)의 \"핵심제목<Keyword >\" 적어보기\n";
                 rawDevotionalText += "👉\"핵심제목<Keyword >\" 에 맞는 묵상, 주님과의 약속/구체적 실천계획 세워보기\n\n\n";
-                rawDevotionalText += "3. 마무리기도🙏 후 댓글로 묵상 나누기 (말씀구절/묵상/실천 등을 댓글로 달아 공유해주시면 좋습니다!)\n";
+                rawDevotionalText += "3. 마무리기도🙏 후 묵상 나누기 (말씀구절/묵상/실천 등을 기록해보세요!)\n";
                 rawDevotionalText += "------------------------------------------------";
                 
                 // 텍스트에서 **로 감싸진 부분을 <strong> 태그로 변환 (화면 표시용)
@@ -2042,9 +1865,6 @@
             setTimeout(() => {
                 saveButton.innerHTML = '<i class="fas fa-save"></i> 저장하기';
             }, 3000);
-            
-            // 달력 업데이트
-            renderCalendar();
         }
         
         // 저장된 묵상 불러오기
@@ -2162,23 +1982,65 @@
             }, 2000);
         }
         
-        // 댓글 게시 기능
+        // 묵상 게시 기능
         function postComment() {
             const commentText = commentInput.value.trim();
             const commentDate = commentDateInput.value;
             
-            // 해당 날짜의 댓글 가져오기
+            if (!commentText) {
+                alert('묵상 내용을 입력해주세요.');
+                return;
+            }
+            
+            if (!commentDate) {
+                alert('날짜를 선택해주세요.');
+                return;
+            }
+            
+            // 묵상 객체 생성
+            const newComment = {
+                id: Date.now().toString(),
+                content: commentText,
+                timestamp: new Date().toISOString(),
+                date: commentDate,
+                likes: 0,
+                liked: false
+            };
+            
+            // 해당 날짜의 묵상 목록 가져오기 또는 생성
+            if (!commentsData[commentDate]) {
+                commentsData[commentDate] = [];
+            }
+            
+            // 새 묵상 추가
+            commentsData[commentDate].unshift(newComment);
+            
+            // 로컬 스토리지에 저장
+            localStorage.setItem('commentsData', JSON.stringify(commentsData));
+            
+            // 입력 필드 초기화
+            commentInput.value = '';
+            
+            // 묵상 목록 새로고침
+            loadComments();
+        }
+        
+        // 묵상 로드 및 표시
+        function loadComments() {
+            const commentDate = commentDateInput.value;
+            
+            // 해당 날짜의 묵상 가져오기
             const dateComments = commentsData[commentDate] || [];
             
-            // 댓글 목록 요소 초기화
+            // 묵상 목록 요소 초기화
             commentList.innerHTML = '';
             
             if (dateComments.length === 0) {
-                // 댓글이 없는 경우 메시지 표시
+                // 묵상이 없는 경우 메시지 표시
                 commentList.innerHTML = `
                     <div class="empty-comments">
                         <i class="fas fa-comment-slash" style="font-size: 24px; margin-bottom: 10px;"></i>
-                        <p>아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!</p>
+                        <p>아직 저장된 묵상이 없습니다. 첫 번째 묵상을 기록해보세요!</p>
                     </div>
                 `;
                 
@@ -2193,12 +2055,12 @@
                 currentPage = 1;
             }
             
-            // 현재 페이지의 댓글 가져오기
+            // 현재 페이지의 묵상 가져오기
             const startIndex = (currentPage - 1) * commentsPerPage;
             const endIndex = Math.min(startIndex + commentsPerPage, dateComments.length);
             const pageComments = dateComments.slice(startIndex, endIndex);
             
-            // 댓글 렌더링
+            // 묵상 렌더링
             pageComments.forEach(comment => {
                 const commentTime = new Date(comment.timestamp);
                 const timeString = commentTime.toLocaleTimeString('ko-KR', { 
@@ -2297,31 +2159,28 @@
             commentPagination.appendChild(nextButton);
         }
         
-        // 댓글 삭제
+        // 묵상 삭제
         function deleteComment(commentId, date) {
-            if (!confirm('정말 이 댓글을 삭제하시겠습니까?')) {
+            if (!confirm('정말 이 묵상을 삭제하시겠습니까?')) {
                 return;
             }
             
             if (commentsData[date]) {
-                // 해당 ID의 댓글 찾기 및 삭제
+                // 해당 ID의 묵상 찾기 및 삭제
                 commentsData[date] = commentsData[date].filter(comment => comment.id !== commentId);
                 
                 // 로컬 스토리지 업데이트
                 localStorage.setItem('commentsData', JSON.stringify(commentsData));
                 
-                // 댓글 목록 새로고침
+                // 묵상 목록 새로고침
                 loadComments();
-                
-                // 달력 업데이트
-                renderCalendar();
             }
         }
         
-        // 댓글 좋아요
+        // 묵상 좋아요
         function likeComment(commentId, date) {
             if (commentsData[date]) {
-                // 해당 ID의 댓글 찾기
+                // 해당 ID의 묵상 찾기
                 const commentIndex = commentsData[date].findIndex(comment => comment.id === commentId);
                 
                 if (commentIndex !== -1) {
@@ -2339,172 +2198,9 @@
                     // 로컬 스토리지 업데이트
                     localStorage.setItem('commentsData', JSON.stringify(commentsData));
                     
-                    // 댓글 목록 새로고침
+                    // 묵상 목록 새로고침
                     loadComments();
                 }
-            }
-        }
-        
-        // 달력 렌더링
-        function renderCalendar() {
-            const year = currentMonthDate.getFullYear();
-            const month = currentMonthDate.getMonth();
-            
-            // 월 제목 업데이트
-            currentMonthElement.textContent = `${year}년 ${month + 1}월`;
-            
-            // 달력 일자 초기화
-            calendarDays.innerHTML = '';
-            
-            // 해당 월의 첫 날
-            const firstDay = new Date(year, month, 1);
-            // 해당 월의 마지막 날
-            const lastDay = new Date(year, month + 1, 0);
-            
-            // 첫 날의 요일 (0: 일요일, 1: 월요일, ...)
-            const firstDayOfWeek = firstDay.getDay();
-            // 마지막 날의 날짜
-            const lastDate = lastDay.getDate();
-            
-            // 이전 달의 마지막 날
-            const prevLastDay = new Date(year, month, 0);
-            const prevLastDate = prevLastDay.getDate();
-            
-            // 달력에 표시할 총 일수 (최대 42일: 6주)
-            const totalDays = 42;
-            
-            // 오늘 날짜
-            const today = new Date();
-            const todayYear = today.getFullYear();
-            const todayMonth = today.getMonth();
-            const todayDate = today.getDate();
-            
-            // 이전 달의 날짜 렌더링
-            for (let i = firstDayOfWeek; i > 0; i--) {
-                const day = prevLastDate - i + 1;
-                const dateObj = new Date(year, month - 1, day);
-                const dateStr = dateToString(dateObj);
-                
-                // 해당 날짜에 저장된 데이터 확인
-                const hasDevotional = savedDevotionals[dateStr] ? true : false;
-                const hasComments = commentsData[dateStr] && commentsData[dateStr].length > 0 ? true : false;
-                
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day other-month';
-                dayElement.dataset.date = dateStr;
-                
-                let dayContent = `<div class="day-number">${day}</div>`;
-                
-                if (hasDevotional) {
-                    dayContent += `<div class="has-devotional"><i class="fas fa-book"></i></div>`;
-                }
-                
-                if (hasComments) {
-                    dayContent += `<div class="has-comment"></div>`;
-                }
-                
-                dayElement.innerHTML = dayContent;
-                
-                // 클릭 이벤트 리스너 추가
-                dayElement.addEventListener('click', () => selectCalendarDay(dateStr));
-                
-                calendarDays.appendChild(dayElement);
-            }
-            
-            // 현재 달의 날짜 렌더링
-            for (let i = 1; i <= lastDate; i++) {
-                const dateObj = new Date(year, month, i);
-                const dateStr = dateToString(dateObj);
-                
-                // 해당 날짜에 저장된 데이터 확인
-                const hasDevotional = savedDevotionals[dateStr] ? true : false;
-                const hasComments = commentsData[dateStr] && commentsData[dateStr].length > 0 ? true : false;
-                
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.dataset.date = dateStr;
-                
-                // 현재 날짜가 오늘인지 확인
-                if (year === todayYear && month === todayMonth && i === todayDate) {
-                    dayElement.classList.add('today');
-                }
-                
-                // 일요일인 경우 강조
-                if (dateObj.getDay() === 0) {
-                    dayElement.style.color = '#dc3545';
-                }
-                
-                let dayContent = `<div class="day-number">${i}</div>`;
-                
-                if (hasDevotional) {
-                    dayContent += `<div class="has-devotional"><i class="fas fa-book"></i></div>`;
-                }
-                
-                if (hasComments) {
-                    dayContent += `<div class="has-comment"></div>`;
-                }
-                
-                dayElement.innerHTML = dayContent;
-                
-                // 클릭 이벤트 리스너 추가
-                dayElement.addEventListener('click', () => selectCalendarDay(dateStr));
-                
-                calendarDays.appendChild(dayElement);
-            }
-            
-            // 다음 달의 날짜로 나머지 채우기
-            const remainingDays = totalDays - (firstDayOfWeek + lastDate);
-            for (let i = 1; i <= remainingDays; i++) {
-                const dateObj = new Date(year, month + 1, i);
-                const dateStr = dateToString(dateObj);
-                
-                // 해당 날짜에 저장된 데이터 확인
-                const hasDevotional = savedDevotionals[dateStr] ? true : false;
-                const hasComments = commentsData[dateStr] && commentsData[dateStr].length > 0 ? true : false;
-                
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day other-month';
-                dayElement.dataset.date = dateStr;
-                
-                let dayContent = `<div class="day-number">${i}</div>`;
-                
-                if (hasDevotional) {
-                    dayContent += `<div class="has-devotional"><i class="fas fa-book"></i></div>`;
-                }
-                
-                if (hasComments) {
-                    dayContent += `<div class="has-comment"></div>`;
-                }
-                
-                dayElement.innerHTML = dayContent;
-                
-                // 클릭 이벤트 리스너 추가
-                dayElement.addEventListener('click', () => selectCalendarDay(dateStr));
-                
-                calendarDays.appendChild(dayElement);
-            }
-        }
-        
-        // 날짜 선택 처리
-        function selectCalendarDay(dateStr) {
-            // 모든 탭 내 날짜 입력 필드 업데이트
-            dateInput.value = dateStr;
-            commentDateInput.value = dateStr;
-            
-            // 저장된 묵상 불러오기
-            if (savedDevotionals[dateStr]) {
-                loadSavedDevotional(dateStr);
-                
-                // 생성기 탭으로 이동
-                document.querySelector('.tab-btn[data-tab="generator"]').click();
-            }
-            
-            // 댓글 로드
-            loadComments();
-            
-            // 모바일인 경우 댓글 탭으로 이동
-            if (window.innerWidth <= 768 && commentsData[dateStr] && commentsData[dateStr].length > 0) {
-                document.querySelector('.tab-btn[data-tab="comments"]').click();
             }
         }
         
@@ -2514,12 +2210,6 @@
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
-        }
-        
-        // 월 변경
-        function changeMonth(direction) {
-            currentMonthDate.setMonth(currentMonthDate.getMonth() + direction);
-            renderCalendar();
         }
         
         // 글자 크기 조정
@@ -2608,7 +2298,6 @@
                 saveButton.style.display = 'none';
                 
                 loadComments();
-                renderCalendar();
                 
                 alert('모든 데이터가 삭제되었습니다.');
             }
@@ -2631,16 +2320,10 @@
                     break;
                     
                 case 'commentsTab':
-                    // 댓글 탭에서는 댓글 포커스
+                    // 묵상 탭에서는 입력란 포커스
                     commentInput.focus();
                     // 스크롤 이동
                     commentInput.scrollIntoView({ behavior: 'smooth' });
-                    break;
-                    
-                case 'calendarTab':
-                    // 달력 탭에서는 오늘 날짜로 이동
-                    currentMonthDate = new Date();
-                    renderCalendar();
                     break;
                     
                 case 'settingsTab':
@@ -2652,7 +2335,7 @@
         // 터치 최적화 설정
         function setupTouchOptimizations() {
             // 터치 이벤트 시 진동 피드백 (지원하는 기기에서만)
-            const touchElements = document.querySelectorAll('.button-touch, .calendar-day, .bible-book, .tab-btn');
+            const touchElements = document.querySelectorAll('.button-touch, .bible-book, .tab-btn');
             
             touchElements.forEach(element => {
                 element.addEventListener('touchstart', () => {
@@ -2685,50 +2368,3 @@
         
         // 앱 시작
         loadBibleData();
-    </script>
-</body>
-</html>
-            if (!commentText) {
-                alert('댓글 내용을 입력해주세요.');
-                return;
-            }
-            
-            if (!commentDate) {
-                alert('날짜를 선택해주세요.');
-                return;
-            }
-            
-            // 댓글 객체 생성
-            const newComment = {
-                id: Date.now().toString(),
-                content: commentText,
-                timestamp: new Date().toISOString(),
-                date: commentDate,
-                likes: 0,
-                liked: false
-            };
-            
-            // 해당 날짜의 댓글 목록 가져오기 또는 생성
-            if (!commentsData[commentDate]) {
-                commentsData[commentDate] = [];
-            }
-            
-            // 새 댓글 추가
-            commentsData[commentDate].unshift(newComment);
-            
-            // 로컬 스토리지에 저장
-            localStorage.setItem('commentsData', JSON.stringify(commentsData));
-            
-            // 입력 필드 초기화
-            commentInput.value = '';
-            
-            // 댓글 목록 새로고침
-            loadComments();
-            
-            // 달력 업데이트
-            renderCalendar();
-        }
-        
-        // 댓글 로드 및 표시
-        function loadComments() {
-            const commentDate = commentDateInput.value;
