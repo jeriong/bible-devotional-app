@@ -9,7 +9,7 @@
     <!-- 메타 태그 -->
     <meta name="description" content="오늘의 만나 - 2025년 성경 묵상 앱">
     <meta name="keywords" content="성경, 묵상, 말씀, 오늘의 만나">
-    <style>
+<style>
         /* 폰트 설정 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
         
@@ -193,11 +193,145 @@
             font-size: 14px;
             color: #6c757d;
         }
+        
+        /* 성경책 그리드 스타일 */
+        .bible-grid-toggle {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .toggle-button {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #334155;
+            transition: all 0.2s;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .toggle-button:hover {
+            background-color: #e2e8f0;
+        }
+
+        .toggle-icon {
+            margin-right: 5px;
+        }
+
+        .bible-grid {
+            margin-top: 10px;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .bible-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bible-category h3 {
+            color: #4682B4;
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .bible-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .bible-book {
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70px;
+        }
+
+        .bible-book:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .bible-book.selected {
+            background-color: #4682B4;
+            color: white;
+            border-color: #366b96;
+        }
+
+        .book-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .book-name {
+            font-size: 12px;
+            line-height: 1.2;
+            word-break: keep-all;
+        }
+
+        .old-testament .bible-book {
+            background-color: #f3f8ff;
+        }
+
+        .new-testament .bible-book {
+            background-color: #f0f9ff;
+        }
+
+        .old-testament .bible-book.selected {
+            background-color: #5a8dcb;
+        }
+
+        .new-testament .bible-book.selected {
+            background-color: #4682B4;
+        }
+
+        /* 반응형 조정 */
+        @media (max-width: 768px) {
+            .bible-books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+            
+            .bible-book {
+                height: 60px;
+                padding: 8px 5px;
+            }
+            
+            .book-icon {
+                font-size: 20px;
+                margin-bottom: 4px;
+            }
+            
+            .book-name {
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍚 만나 생성기 🍚</h1>
+        <h1>🍚 오늘의 만나 - 성경 묵상 앱</h1>
         
         <div id="status" class="status loading">성경 데이터를 불러오는 중...<div class="spinner"></div></div>
         
@@ -211,11 +345,36 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="book">2. 성경책 선택:</label>
-                    <select id="book">
+                    <label id="bibleGridLabel" for="book">2. 성경책 선택:</label>
+                    <div class="bible-grid-toggle">
+                        <button id="toggleGridView" type="button" class="toggle-button">
+                            <span class="toggle-icon">📚</span> 그리드 보기
+                        </button>
+                    </div>
+                    
+                    <!-- 기존 드롭다운 (기본 표시) -->
+                    <select id="book" aria-labelledby="bibleGridLabel">
                         <option value="" disabled selected>성경책을 선택하세요</option>
                         <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
                     </select>
+                    
+                    <!-- 그리드 보기 (토글 시 표시) -->
+                    <div id="bibleGridView" class="bible-grid" style="display: none;">
+                        <div class="bible-categories">
+                            <div class="bible-category old-testament">
+                                <h3>구약성경</h3>
+                                <div class="bible-books-grid" id="oldTestamentGrid">
+                                    <!-- 구약 성경책들은 JavaScript로 채워집니다 -->
+                                </div>
+                            </div>
+                            <div class="bible-category new-testament">
+                                <h3>신약성경</h3>
+                                <div class="bible-books-grid" id="newTestamentGrid">
+                                    <!-- 신약 성경책들은 JavaScript로 채워집니다 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -231,11 +390,36 @@
                 <hr style="margin: 20px 0; border-top: 1px dashed #ced4da;">
                 
                 <div class="form-group">
-                    <label for="secondBook">4. 추가 성경책 선택 (선택사항):</label>
-                    <select id="secondBook">
+                    <label id="secondBibleGridLabel" for="secondBook">4. 추가 성경책 선택 (선택사항):</label>
+                    <div class="bible-grid-toggle">
+                        <button id="toggleSecondGridView" type="button" class="toggle-button">
+                            <span class="toggle-icon">📚</span> 그리드 보기
+                        </button>
+                    </div>
+                    
+                    <!-- 기존 드롭다운 (기본 표시) -->
+                    <select id="secondBook" aria-labelledby="secondBibleGridLabel">
                         <option value="" selected>선택하지 않음</option>
                         <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
                     </select>
+                    
+                    <!-- 그리드 보기 (토글 시 표시) -->
+                    <div id="secondBibleGridView" class="bible-grid" style="display: none;">
+                        <div class="bible-categories">
+                            <div class="bible-category old-testament">
+                                <h3>구약성경</h3>
+                                <div class="bible-books-grid" id="secondOldTestamentGrid">
+                                    <!-- 구약 성경책들은 JavaScript로 채워집니다 -->
+                                </div>
+                            </div>
+                            <div class="bible-category new-testament">
+                                <h3>신약성경</h3>
+                                <div class="bible-books-grid" id="secondNewTestamentGrid">
+                                    <!-- 신약 성경책들은 JavaScript로 채워집니다 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -393,7 +577,19 @@
             // 데이터에 있는 성경책만 필터링
             const validBooks = standardBooks.filter(book => book in bibleData);
             
+            // 구약과 신약 책 구분
+            let inOldTestament = true;
+            
             for (const book of validBooks) {
+                // 말라기(구약 마지막 책)와 마태복음(신약 첫 책) 사이에 구분선 추가
+                if (inOldTestament && book === '마태복음') {
+                    const separator = document.createElement('option');
+                    separator.disabled = true;
+                    separator.textContent = "-----------";
+                    bookSelect.appendChild(separator);
+                    inOldTestament = false;
+                }
+                
                 const option = document.createElement('option');
                 option.value = book;
                 option.textContent = book;
@@ -408,7 +604,19 @@
             // 데이터에 있는 성경책만 필터링
             const validBooks = standardBooks.filter(book => book in bibleData);
             
+            // 구약과 신약 책 구분
+            let inOldTestament = true;
+            
             for (const book of validBooks) {
+                // 말라기(구약 마지막 책)와 마태복음(신약 첫 책) 사이에 구분선 추가
+                if (inOldTestament && book === '마태복음') {
+                    const separator = document.createElement('option');
+                    separator.disabled = true;
+                    separator.textContent = "-----------";
+                    secondBookSelect.appendChild(separator);
+                    inOldTestament = false;
+                }
+                
                 const option = document.createElement('option');
                 option.value = book;
                 option.textContent = book;
