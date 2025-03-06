@@ -331,7 +331,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🍚 오늘의 만나 - 성경 묵상 앱</h1>
+        <h1>🍚 만나 생성기 🍚</h1>
         
         <div id="status" class="status loading">성경 데이터를 불러오는 중...<div class="spinner"></div></div>
         
@@ -345,36 +345,11 @@
                 </div>
                 
                 <div class="form-group">
-                    <label id="bibleGridLabel" for="book">2. 성경책 선택:</label>
-                    <div class="bible-grid-toggle">
-                        <button id="toggleGridView" type="button" class="toggle-button">
-                            <span class="toggle-icon">📚</span> 그리드 보기
-                        </button>
-                    </div>
-                    
-                    <!-- 기존 드롭다운 (기본 표시) -->
-                    <select id="book" aria-labelledby="bibleGridLabel">
+                    <label for="book">2. 성경책 선택:</label>
+                    <select id="book">
                         <option value="" disabled selected>성경책을 선택하세요</option>
                         <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
                     </select>
-                    
-                    <!-- 그리드 보기 (토글 시 표시) -->
-                    <div id="bibleGridView" class="bible-grid" style="display: none;">
-                        <div class="bible-categories">
-                            <div class="bible-category old-testament">
-                                <h3>구약성경</h3>
-                                <div class="bible-books-grid" id="oldTestamentGrid">
-                                    <!-- 구약 성경책들은 JavaScript로 채워집니다 -->
-                                </div>
-                            </div>
-                            <div class="bible-category new-testament">
-                                <h3>신약성경</h3>
-                                <div class="bible-books-grid" id="newTestamentGrid">
-                                    <!-- 신약 성경책들은 JavaScript로 채워집니다 -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -390,36 +365,11 @@
                 <hr style="margin: 20px 0; border-top: 1px dashed #ced4da;">
                 
                 <div class="form-group">
-                    <label id="secondBibleGridLabel" for="secondBook">4. 추가 성경책 선택 (선택사항):</label>
-                    <div class="bible-grid-toggle">
-                        <button id="toggleSecondGridView" type="button" class="toggle-button">
-                            <span class="toggle-icon">📚</span> 그리드 보기
-                        </button>
-                    </div>
-                    
-                    <!-- 기존 드롭다운 (기본 표시) -->
-                    <select id="secondBook" aria-labelledby="secondBibleGridLabel">
+                    <label for="secondBook">4. 추가 성경책 선택 (선택사항):</label>
+                    <select id="secondBook">
                         <option value="" selected>선택하지 않음</option>
                         <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
                     </select>
-                    
-                    <!-- 그리드 보기 (토글 시 표시) -->
-                    <div id="secondBibleGridView" class="bible-grid" style="display: none;">
-                        <div class="bible-categories">
-                            <div class="bible-category old-testament">
-                                <h3>구약성경</h3>
-                                <div class="bible-books-grid" id="secondOldTestamentGrid">
-                                    <!-- 구약 성경책들은 JavaScript로 채워집니다 -->
-                                </div>
-                            </div>
-                            <div class="bible-category new-testament">
-                                <h3>신약성경</h3>
-                                <div class="bible-books-grid" id="secondNewTestamentGrid">
-                                    <!-- 신약 성경책들은 JavaScript로 채워집니다 -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -585,7 +535,7 @@
                 if (inOldTestament && book === '마태복음') {
                     const separator = document.createElement('option');
                     separator.disabled = true;
-                    separator.textContent = "-----------";
+                    separator.textContent = "-------------------------------------------";
                     bookSelect.appendChild(separator);
                     inOldTestament = false;
                 }
@@ -612,7 +562,7 @@
                 if (inOldTestament && book === '마태복음') {
                     const separator = document.createElement('option');
                     separator.disabled = true;
-                    separator.textContent = "-----------";
+                    separator.textContent = "-------------------------------------------";
                     secondBookSelect.appendChild(separator);
                     inOldTestament = false;
                 }
