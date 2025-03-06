@@ -9,35 +9,97 @@
     <!-- 메타 태그 -->
     <meta name="description" content="오늘의 만나 - 2025년 성경 묵상 앱">
     <meta name="keywords" content="성경, 묵상, 말씀, 오늘의 만나">
+    <!-- 폰트어썸 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
         /* 폰트 설정 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
         
         /* 전체 스타일 */
+        :root {
+            --primary-color: #4682B4;
+            --primary-dark: #366b96;
+            --primary-light: #5a8dcb;
+            --success-color: #28a745;
+            --success-dark: #218838;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-bg: #f8f9fa;
+            --border-color: #ced4da;
+            --text-color: #333;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition-speed: 0.3s;
+            
+            /* Mobile optimized touch targets */
+            --touch-target-size: 44px;
+            --touch-spacing: 16px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            touch-action: manipulation;
+            scroll-behavior: smooth;
+        }
+        
         body {
             font-family: 'Noto Sans KR', Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-            color: #333;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            overscroll-behavior-y: contain;
         }
+        
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: white;
+            background-color: var(--white);
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--card-shadow);
             padding: 20px;
+            overflow: hidden;
+        }
+        
+        /* Header with floating nav button for mobile */
+        .app-header {
+            position: relative;
+            padding: 15px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .menu-toggle {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--primary-color);
+            cursor: pointer;
+            z-index: 100;
+            height: var(--touch-target-size);
+            width: var(--touch-target-size);
+            display: none;
         }
         
         /* 헤더 스타일 */
         h1 {
             text-align: center;
-            color: #4682B4;
+            color: var(--primary-color);
             margin-bottom: 20px;
             font-weight: 700;
         }
+        
         .status {
             text-align: center;
             padding: 10px;
@@ -45,17 +107,92 @@
             border-radius: 5px;
             font-weight: 500;
         }
+        
         .success {
             background-color: #d4edda;
             color: #155724;
         }
+        
         .error {
             background-color: #f8d7da;
             color: #721c24;
         }
+        
         .loading {
             background-color: #cce5ff;
             color: #004085;
+        }
+        
+        /* 탭 네비게이션 */
+        .tabs-container {
+            display: flex;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .tabs-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        .tab-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 15px 5px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            text-align: center;
+            white-space: nowrap;
+            height: var(--touch-target-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .tab-btn:hover:not(.active) {
+            background-color: rgba(70, 130, 180, 0.05);
+            color: var(--primary-color);
+        }
+        
+        .tab-btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        /* 탭 콘텐츠 */
+        .tab-content {
+            display: none;
+            padding: 10px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         /* 레이아웃 */
@@ -63,56 +200,131 @@
             display: flex;
             gap: 20px;
         }
+        
         .column {
             flex: 1;
         }
         
         /* 폼 요소 */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+        
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 500;
         }
-        select, button, input[type="date"] {
+        
+        select, button, input[type="date"], input[type="text"], textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             font-size: 16px;
             font-family: 'Noto Sans KR', Arial, sans-serif;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
         }
+        
         select, input[type="date"] {
             background-color: white;
+            height: var(--touch-target-size);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
         }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.25);
+        }
+        
         button {
-            background-color: #4682B4;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             cursor: pointer;
             font-weight: 500;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            margin-top: 10px;
+            transition: background-color var(--transition-speed);
+            height: var(--touch-target-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(100, 100);
+                opacity: 0;
+            }
+        }
+        
+        button:active::after {
+            animation: ripple 0.4s ease-out;
+            opacity: 1;
+        }
+        
         button:hover {
-            background-color: #366b96;
+            background-color: var(--primary-dark);
         }
+        
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
         
+        button i {
+            margin-right: 8px;
+        }
+        
         /* 복사 버튼 */
         .copy-button {
-            background-color: #28a745;
+            background-color: var(--success-color);
             margin-top: 10px;
             display: none; /* 초기에는 숨김 */
         }
+        
         .copy-button:hover {
-            background-color: #218838;
+            background-color: var(--success-dark);
         }
+        
         .copy-button.copied {
             background-color: #6c757d;
         }
@@ -120,26 +332,48 @@
         /* 섹션 제목 */
         h2 {
             margin-top: 0;
-            color: #4682B4;
+            color: var(--primary-color);
             padding-bottom: 10px;
             border-bottom: 1px solid #e9ecef;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 i {
+            margin-right: 10px;
+        }
+        
+        h3 {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
         
         /* 묵상 영역 */
         .devotional-container {
             position: relative;
         }
+        
         .devotional {
             white-space: pre-wrap;
             line-height: 1.6;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border-left: 4px solid #4682B4;
+            padding: 20px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 15px;
+            transition: all var(--transition-speed);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+        
+        .devotional:active {
+            transform: scale(0.99);
+        }
+        
         strong {
-            color: #366b96;
+            color: var(--primary-dark);
         }
         
         /* 복사 성공 메시지 */
@@ -148,27 +382,19 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #28a745;
+            background-color: var(--success-color);
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1000;
-        }
-        .copy-message.show {
-            opacity: 1;
+            pointer-events: none;
         }
         
-        /* 반응형 레이아웃 */
-        @media (max-width: 768px) {
-            .columns {
-                flex-direction: column;
-            }
-            .container {
-                padding: 15px;
-            }
+        .copy-message.show {
+            opacity: 1;
         }
         
         /* 로딩 스피너 */
@@ -178,9 +404,10 @@
             margin: 20px auto;
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
-            border-top: 4px solid #4682B4;
+            border-top: 4px solid var(--primary-color);
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -190,16 +417,23 @@
         footer {
             text-align: center;
             margin-top: 30px;
+            padding: 20px 0;
             font-size: 14px;
-            color: #6c757d;
+            color: var(--text-light);
+            border-top: 1px solid var(--border-color);
         }
         
         /* 성경책 그리드 스타일 */
+        .bible-grid-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
         .bible-grid-toggle {
             text-align: right;
             margin-bottom: 10px;
         }
-
+        
         .toggle-button {
             background-color: #f1f5f9;
             border: 1px solid #cbd5e1;
@@ -211,16 +445,17 @@
             transition: all 0.2s;
             width: auto;
             margin-top: 0;
+            height: 36px;
         }
-
+        
         .toggle-button:hover {
             background-color: #e2e8f0;
         }
-
+        
         .toggle-icon {
             margin-right: 5px;
         }
-
+        
         .bible-grid {
             margin-top: 10px;
             background-color: #ffffff;
@@ -229,16 +464,17 @@
             padding: 15px;
             max-height: 400px;
             overflow-y: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
+        
         .bible-categories {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-
+        
         .bible-category h3 {
-            color: #4682B4;
+            color: var(--primary-color);
             margin-top: 0;
             margin-bottom: 10px;
             padding-bottom: 8px;
@@ -246,13 +482,13 @@
             font-size: 16px;
             font-weight: 600;
         }
-
+        
         .bible-books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 10px;
         }
-
+        
         .bible-book {
             background-color: #f8f9fa;
             border: 1px solid #e2e8f0;
@@ -267,48 +503,358 @@
             justify-content: center;
             height: 70px;
         }
-
+        
         .bible-book:hover {
             background-color: #e2e8f0;
             transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-
-        .bible-book.selected {
-            background-color: #4682B4;
-            color: white;
-            border-color: #366b96;
+        
+        .bible-book:active {
+            transform: translateY(0);
         }
-
+        
+        .bible-book.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+        
         .book-icon {
             font-size: 24px;
             margin-bottom: 6px;
         }
-
+        
         .book-name {
             font-size: 12px;
             line-height: 1.2;
             word-break: keep-all;
         }
-
+        
         .old-testament .bible-book {
             background-color: #f3f8ff;
         }
-
+        
         .new-testament .bible-book {
             background-color: #f0f9ff;
         }
-
+        
         .old-testament .bible-book.selected {
-            background-color: #5a8dcb;
+            background-color: var(--primary-light);
         }
-
+        
         .new-testament .bible-book.selected {
-            background-color: #4682B4;
+            background-color: var(--primary-color);
         }
-
-        /* 반응형 조정 */
+        
+        /* 코멘트 시스템 스타일 */
+        .comments-section {
+            margin-top: 30px;
+        }
+        
+        .comment-form {
+            margin-bottom: 20px;
+        }
+        
+        .comment-input {
+            min-height: 100px;
+            resize: vertical;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            font-size: 16px;
+        }
+        
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .comment-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 3px solid var(--primary-color);
+            transition: transform var(--transition-speed);
+            position: relative;
+        }
+        
+        .comment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .comment-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .comment-action {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+            font-size: 14px;
+            width: auto;
+            height: auto;
+            margin-top: 0;
+        }
+        
+        .comment-action:hover {
+            color: var(--primary-color);
+            background: none;
+        }
+        
+        .comment-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        
+        .comment-feedback {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .comment-reaction {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 20px;
+            transition: background-color var(--transition-speed);
+        }
+        
+        .comment-reaction:hover {
+            background-color: rgba(70, 130, 180, 0.1);
+        }
+        
+        .comment-reaction.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .empty-comments {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+        
+        .comment-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .page-btn {
+            width: var(--touch-target-size);
+            height: var(--touch-target-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+        
+        .page-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 700;
+        }
+        
+        .page-btn:disabled {
+            background-color: var(--light-bg);
+            color: var(--text-light);
+            cursor: not-allowed;
+        }
+        
+        /* 달력 보기 관련 스타일 */
+        .calendar-view {
+            margin-top: 20px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .month-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .month-nav {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+        
+        .month-nav:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 500;
+            padding: 10px 0;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-speed);
+        }
+        
+        .calendar-day:hover {
+            background-color: rgba(70, 130, 180, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-day.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-dark);
+        }
+        
+        .calendar-day.other-month {
+            opacity: 0.4;
+        }
+        
+        .calendar-day.today {
+            border: 2px solid var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .day-number {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .has-comment {
+            position: absolute;
+            bottom: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+        }
+        
+        .has-devotional {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 10px;
+            color: var(--primary-color);
+        }
+        
+        /* 반응형 스타일 */
         @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+                box-shadow: none;
+                padding: 15px 10px;
+                margin: 0;
+            }
+            
+            .columns {
+                flex-direction: column;
+            }
+            
+            .app-header {
+                position: sticky;
+                top: 0;
+                background-color: var(--white);
+                z-index: 100;
+                padding: 10px 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .tab-btn {
+                min-width: 80px;
+                padding: 12px 5px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                margin: 0;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+            
             .bible-books-grid {
                 grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             }
@@ -326,74 +872,411 @@
             .book-name {
                 font-size: 11px;
             }
+            
+            .calendar-grid {
+                gap: 4px;
+            }
+            
+            .calendar-day-header {
+                font-size: 14px;
+                padding: 5px 0;
+            }
+            
+            .day-number {
+                font-size: 14px;
+            }
+            
+            /* Mobile Optimizations for Touch */
+            select, input[type="date"], button, textarea {
+                font-size: 16px; /* Prevents iOS zoom on focus */
+                padding: 12px;
+            }
+            
+            /* Fixed bottom action button for mobile */
+            .mobile-action {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background-color: var(--primary-color);
+                color: var(--white);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 100;
+                font-size: 24px;
+                transition: all var(--transition-speed);
+                transform: scale(1);
+            }
+            
+            .mobile-action:active {
+                transform: scale(0.9);
+            }
+            
+            /* Improved tap feedback */
+            .button-touch, .calendar-day, .bible-book, .tab-btn {
+                -webkit-tap-highlight-color: transparent;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .button-touch::after, .calendar-day::after, .bible-book::after, .tab-btn::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 5px;
+                height: 5px;
+                background: rgba(70, 130, 180, 0.3);
+                opacity: 0;
+                border-radius: 100%;
+                transform: scale(1, 1) translate(-50%);
+                transform-origin: 50% 50%;
+            }
+            
+            .button-touch:active::after, .calendar-day:active::after, .bible-book:active::after, .tab-btn:active::after {
+                animation: ripple 0.4s ease-out;
+            }
+            
+            /* Bottom nav for mobile */
+            .bottom-nav {
+                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                padding: 10px 0;
+                z-index: 90;
+            }
+            
+            .bottom-nav-items {
+                display: flex;
+                justify-content: space-around;
+            }
+            
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: var(--text-light);
+                font-size: 12px;
+                text-decoration: none;
+                padding: 8px 0;
+                width: 25%;
+            }
+            
+            .bottom-nav-item i {
+                font-size: 20px;
+                margin-bottom: 5px;
+            }
+            
+            .bottom-nav-item.active {
+                color: var(--primary-color);
+            }
+            
+            @media (max-width: 768px) {
+                .bottom-nav {
+                    display: block;
+                }
+                
+                body {
+                    padding-bottom: 60px;
+                }
+            }
+        }
+        
+        /* 다크 모드 토글 */
+        .theme-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--primary-color);
+            cursor: pointer;
+            width: var(--touch-target-size);
+            height: var(--touch-target-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍚 만나 생성기 🍚</h1>
+        <div class="app-header">
+            <button id="menuToggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1>🍚 오늘의 만나 🍚</h1>
+            <button id="themeToggle" class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
         
         <div id="status" class="status loading">성경 데이터를 불러오는 중...<div class="spinner"></div></div>
         
-        <div class="columns">
-            <div class="column">
-                <h2>설정</h2>
-                
-                <div class="form-group">
-                    <label for="date">1. 날짜 선택 (선택사항):</label>
-                    <input type="date" id="date" class="date-picker">
-                </div>
-                
-                <div class="form-group">
-                    <label for="book">2. 성경책 선택:</label>
-                    <select id="book">
-                        <option value="" disabled selected>성경책을 선택하세요</option>
-                        <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="chapter">3. 장 선택:</label>
-                    <select id="chapter">
-                        <option value="" disabled selected>장을 선택하세요</option>
-                        <!-- 장 옵션은 JavaScript로 채워집니다 -->
-                    </select>
-                </div>
-                
-                <button id="generateButton">묵상 생성하기</button>
-                
-                <hr style="margin: 20px 0; border-top: 1px dashed #ced4da;">
-                
-                <div class="form-group">
-                    <label for="secondBook">4. 추가 성경책 선택 (선택사항):</label>
-                    <select id="secondBook">
-                        <option value="" selected>선택하지 않음</option>
-                        <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="secondChapter">5. 추가 장 선택 (선택사항):</label>
-                    <select id="secondChapter">
-                        <option value="" selected>선택하지 않음</option>
-                        <!-- 장 옵션은 JavaScript로 채워집니다 -->
-                    </select>
-                </div>
-            </div>
-            
-            <div class="column">
-                <h2>오늘의 만나</h2>
-                <div class="devotional-container">
-                    <div id="devotional" class="devotional">
-                        성경책과 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.
+        <!-- 탭 네비게이션 -->
+        <div class="tabs-container">
+            <button class="tab-btn active button-touch" data-tab="generator">
+                <i class="fas fa-book-bible"></i>묵상 생성
+            </button>
+            <button class="tab-btn button-touch" data-tab="comments">
+                <i class="fas fa-comments"></i>오늘의 댓글
+            </button>
+            <button class="tab-btn button-touch" data-tab="calendar">
+                <i class="fas fa-calendar-alt"></i>달력 보기
+            </button>
+            <button class="tab-btn button-touch" data-tab="settings">
+                <i class="fas fa-cog"></i>설정
+            </button>
+        </div>
+        
+        <!-- 묵상 생성 탭 -->
+        <div id="generatorTab" class="tab-content active">
+            <div class="columns">
+                <div class="column">
+                    <h2><i class="fas fa-sliders"></i>설정</h2>
+                    
+                    <div class="form-group">
+                        <label for="date">
+                            <i class="fas fa-calendar"></i> 날짜 선택 (선택사항):
+                        </label>
+                        <input type="date" id="date" class="date-picker">
                     </div>
-                    <button id="copyButton" class="copy-button">📋 복사하기</button>
+                    
+                    <div class="form-group">
+                        <label for="book">
+                            <i class="fas fa-book"></i> 성경책 선택:
+                        </label>
+                        <div class="select-container">
+                            <select id="book">
+                                <option value="" disabled selected>성경책을 선택하세요</option>
+                                <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
+                            </select>
+                        </div>
+                        
+                        <div class="bible-grid-toggle">
+                            <button id="toggleBibleGrid" class="toggle-button">
+                                <i class="fas fa-th toggle-icon"></i>성경책 목록 보기
+                            </button>
+                        </div>
+                        
+                        <div id="bibleGridContainer" class="bible-grid-container">
+                            <div class="bible-grid">
+                                <div class="bible-categories">
+                                    <div class="bible-category old-testament">
+                                        <h3>구약</h3>
+                                        <div class="bible-books-grid" id="oldTestamentGrid">
+                                            <!-- 구약 성경책은 JavaScript로 채워집니다 -->
+                                        </div>
+                                    </div>
+                                    <div class="bible-category new-testament">
+                                        <h3>신약</h3>
+                                        <div class="bible-books-grid" id="newTestamentGrid">
+                                            <!-- 신약 성경책은 JavaScript로 채워집니다 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="chapter">
+                            <i class="fas fa-bookmark"></i> 장 선택:
+                        </label>
+                        <select id="chapter">
+                            <option value="" disabled selected>장을 선택하세요</option>
+                            <!-- 장 옵션은 JavaScript로 채워집니다 -->
+                        </select>
+                    </div>
+                    
+                    <button id="generateButton" class="button-touch">
+                        <i class="fas fa-magic"></i>묵상 생성하기
+                    </button>
+                    
+                    <hr style="margin: 20px 0; border-top: 1px dashed var(--border-color);">
+                    
+                    <div class="form-group">
+                        <label for="secondBook">
+                            <i class="fas fa-book"></i> 추가 성경책 선택 (선택사항):
+                        </label>
+                        <select id="secondBook">
+                            <option value="" selected>선택하지 않음</option>
+                            <!-- 성경책 옵션은 JavaScript로 채워집니다 -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="secondChapter">
+                            <i class="fas fa-bookmark"></i> 추가 장 선택 (선택사항):
+                        </label>
+                        <select id="secondChapter">
+                            <option value="" selected>선택하지 않음</option>
+                            <!-- 장 옵션은 JavaScript로 채워집니다 -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="column">
+                    <h2><i class="fas fa-bread-slice"></i>오늘의 만나</h2>
+                    <div class="devotional-container">
+                        <div id="devotional" class="devotional">
+                            성경책과 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.
+                        </div>
+                        <button id="copyButton" class="copy-button button-touch">
+                            <i class="fas fa-copy"></i> 복사하기
+                        </button>
+                        <button id="saveButton" class="copy-button button-touch" style="background-color: var(--primary-color); display: none;">
+                            <i class="fas fa-save"></i> 저장하기
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         
+        <!-- 댓글 탭 -->
+        <div id="commentsTab" class="tab-content">
+            <h2><i class="fas fa-comments"></i>오늘의 댓글</h2>
+            
+            <div class="form-group">
+                <label for="commentDate">
+                    <i class="fas fa-calendar"></i> 날짜 선택:
+                </label>
+                <input type="date" id="commentDate" class="date-picker">
+            </div>
+            
+            <div class="comment-form">
+                <textarea id="commentInput" class="comment-input" placeholder="오늘의 묵상을 댓글로 나눠보세요. 말씀구절, 묵상 내용, 적용점 등을 자유롭게 공유해주세요."></textarea>
+                <button id="postCommentButton" class="button-touch">
+                    <i class="fas fa-paper-plane"></i> 댓글 게시하기
+                </button>
+            </div>
+            
+            <div class="comment-list" id="commentList">
+                <!-- 댓글은 JavaScript로 채워집니다 -->
+                <div class="empty-comments">
+                    <i class="fas fa-comment-slash" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!</p>
+                </div>
+            </div>
+            
+            <div class="comment-pagination" id="commentPagination">
+                <!-- 페이지네이션 버튼은 JavaScript로 채워집니다 -->
+            </div>
+        </div>
+        
+        <!-- 달력 보기 탭 -->
+        <div id="calendarTab" class="tab-content">
+            <h2><i class="fas fa-calendar-alt"></i>달력 보기</h2>
+            
+            <div class="calendar-view">
+                <div class="calendar-header">
+                    <div class="month-selector">
+                        <button id="prevMonth" class="month-nav button-touch">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="currentMonth" class="month-title">2025년 3월</div>
+                        <button id="nextMonth" class="month-nav button-touch">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarDaysHeader">
+                    <div class="calendar-day-header">일</div>
+                    <div class="calendar-day-header">월</div>
+                    <div class="calendar-day-header">화</div>
+                    <div class="calendar-day-header">수</div>
+                    <div class="calendar-day-header">목</div>
+                    <div class="calendar-day-header">금</div>
+                    <div class="calendar-day-header">토</div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarDays">
+                    <!-- 달력 일자는 JavaScript로 채워집니다 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 설정 탭 -->
+        <div id="settingsTab" class="tab-content">
+            <h2><i class="fas fa-cog"></i>설정</h2>
+            
+            <div class="form-group">
+                <label for="fontSizeSlider">
+                    <i class="fas fa-text-height"></i> 글자 크기 조정:
+                </label>
+                <input type="range" id="fontSizeSlider" min="80" max="150" value="100" step="5">
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <span>작게</span>
+                    <span id="fontSizeValue">100%</span>
+                    <span>크게</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="autoSave">
+                    <i class="fas fa-save"></i> 자동 저장:
+                </label>
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoSave">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span style="margin-left: 10px;">묵상 내용을 자동으로 저장합니다</span>
+                </div>
+            </div>
+            
+            <h3><i class="fas fa-database"></i> 데이터 관리</h3>
+            
+            <button id="exportDataButton" class="button-touch" style="background-color: #6c757d;">
+                <i class="fas fa-file-export"></i> 모든 데이터 내보내기
+            </button>
+            
+            <button id="clearDataButton" class="button-touch" style="background-color: var(--error-color); margin-top: 15px;">
+                <i class="fas fa-trash-alt"></i> 모든 데이터 삭제
+            </button>
+        </div>
+        
+        <!-- 모바일용 하단 네비게이션 -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-items">
+                <a href="#" class="bottom-nav-item active" data-tab="generator">
+                    <i class="fas fa-book-bible"></i>
+                    <span>묵상</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="comments">
+                    <i class="fas fa-comments"></i>
+                    <span>댓글</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>달력</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>설정</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 모바일용 작업 버튼 -->
+        <button id="mobileAction" class="mobile-action">
+            <i class="fas fa-plus"></i>
+        </button>
+        
         <footer>
-            <p>이 앱은 GitHub에서 호스팅되는 성경 데이터를 사용합니다.</p>
+            <p>© 2025 오늘의 만나 | <a href="#" id="aboutLink">앱 정보</a></p>
         </footer>
     </div>
     
@@ -404,8 +1287,16 @@
         // 전역 변수
         let bibleData = null;
         let rawDevotionalText = ""; // 원본 텍스트 저장용 변수 추가
+        let commentsData = {}; // 날짜별 댓글 데이터 저장
+        let savedDevotionals = {}; // 날짜별 저장된 묵상 내용
+        let currentPage = 1;
+        let commentsPerPage = 5;
+        let currentMonthDate = new Date();
+        let darkMode = false;
+        
+        // DOM 요소
         const statusElement = document.getElementById('status');
-        const dateInput = document.getElementById('date'); // date input으로 변경
+        const dateInput = document.getElementById('date');
         const bookSelect = document.getElementById('book');
         const chapterSelect = document.getElementById('chapter');
         const secondBookSelect = document.getElementById('secondBook');
@@ -413,7 +1304,32 @@
         const generateButton = document.getElementById('generateButton');
         const devotionalElement = document.getElementById('devotional');
         const copyButton = document.getElementById('copyButton');
+        const saveButton = document.getElementById('saveButton');
         const copyMessage = document.getElementById('copyMessage');
+        const commentDateInput = document.getElementById('commentDate');
+        const commentInput = document.getElementById('commentInput');
+        const postCommentButton = document.getElementById('postCommentButton');
+        const commentList = document.getElementById('commentList');
+        const commentPagination = document.getElementById('commentPagination');
+        const calendarDays = document.getElementById('calendarDays');
+        const currentMonthElement = document.getElementById('currentMonth');
+        const prevMonthButton = document.getElementById('prevMonth');
+        const nextMonthButton = document.getElementById('nextMonth');
+        const toggleBibleGridButton = document.getElementById('toggleBibleGrid');
+        const bibleGridContainer = document.getElementById('bibleGridContainer');
+        const oldTestamentGrid = document.getElementById('oldTestamentGrid');
+        const newTestamentGrid = document.getElementById('newTestamentGrid');
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        const autoSaveCheckbox = document.getElementById('autoSave');
+        const exportDataButton = document.getElementById('exportDataButton');
+        const clearDataButton = document.getElementById('clearDataButton');
+        const mobileActionButton = document.getElementById('mobileAction');
+        const themeToggleButton = document.getElementById('themeToggle');
+        const menuToggleButton = document.getElementById('menuToggle');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const bottomNavLinks = document.querySelectorAll('.bottom-nav-item');
         
         // 오늘 날짜를 기본값으로 설정
         function setTodayAsDefault() {
@@ -421,11 +1337,52 @@
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
-            dateInput.value = `${year}-${month}-${day}`;
+            const todayStr = `${year}-${month}-${day}`;
+            
+            dateInput.value = todayStr;
+            commentDateInput.value = todayStr;
         }
         
-        // 페이지 로드시 오늘 날짜 설정
+        // 페이지 로드시 오늘 날짜 설정 및 저장된 데이터 로드
         setTodayAsDefault();
+        loadSavedData();
+        
+        // 저장된 데이터 로드
+        function loadSavedData() {
+            // 댓글 데이터 로드
+            const savedComments = localStorage.getItem('commentsData');
+            if (savedComments) {
+                commentsData = JSON.parse(savedComments);
+            }
+            
+            // 저장된 묵상 내용 로드
+            const savedDevotionalData = localStorage.getItem('savedDevotionals');
+            if (savedDevotionalData) {
+                savedDevotionals = JSON.parse(savedDevotionalData);
+            }
+            
+            // 다크 모드 설정 로드
+            const darkModePreference = localStorage.getItem('darkMode');
+            if (darkModePreference === 'true') {
+                darkMode = true;
+                document.body.classList.add('dark-mode');
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // 글자 크기 설정 로드
+            const fontSizePreference = localStorage.getItem('fontSize');
+            if (fontSizePreference) {
+                fontSizeSlider.value = fontSizePreference;
+                fontSizeValue.textContent = `${fontSizePreference}%`;
+                document.documentElement.style.fontSize = `${fontSizePreference}%`;
+            }
+            
+            // 자동 저장 설정 로드
+            const autoSavePreference = localStorage.getItem('autoSave');
+            if (autoSavePreference === 'true') {
+                autoSaveCheckbox.checked = true;
+            }
+        }
         
         // GitHub에서 성경 데이터 로드
         async function loadBibleData() {
@@ -448,6 +1405,10 @@
                 
                 // UI 초기화
                 initializeUI();
+                
+                // 댓글 로드 및 달력 설정
+                loadComments();
+                renderCalendar();
                 
             } catch (error) {
                 console.error('데이터 로드 중 오류 발생:', error);
@@ -487,6 +1448,70 @@
             
             // UI 초기화
             initializeUI();
+            
+            // 댓글 로드 및 달력 설정
+            loadComments();
+            renderCalendar();
+        }
+        
+        // 탭 변경 처리
+        function setupTabs() {
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 현재 활성 탭 제거
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    bottomNavLinks.forEach(link => link.classList.remove('active'));
+                    
+                    // 새 탭 활성화
+                    const tabId = button.getAttribute('data-tab');
+                    button.classList.add('active');
+                    document.getElementById(`${tabId}Tab`).classList.add('active');
+                    
+                    // 모바일 하단 네비게이션 동기화
+                    const matchingNavLink = document.querySelector(`.bottom-nav-item[data-tab="${tabId}"]`);
+                    if (matchingNavLink) {
+                        matchingNavLink.classList.add('active');
+                    }
+                    
+                    // 탭별 특수 처리
+                    if (tabId === 'comments') {
+                        loadComments();
+                    } else if (tabId === 'calendar') {
+                        renderCalendar();
+                    }
+                });
+            });
+            
+            // 모바일 하단 네비게이션 처리
+            bottomNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // 현재 활성 탭 제거
+                    bottomNavLinks.forEach(l => l.classList.remove('active'));
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 새 탭 활성화
+                    const tabId = link.getAttribute('data-tab');
+                    link.classList.add('active');
+                    document.getElementById(`${tabId}Tab`).classList.add('active');
+                    
+                    // 상단 탭 버튼 동기화
+                    const matchingTabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                    if (matchingTabButton) {
+                        matchingTabButton.classList.add('active');
+                    }
+                    
+                    // 탭별 특수 처리
+                    if (tabId === 'comments') {
+                        loadComments();
+                    } else if (tabId === 'calendar') {
+                        renderCalendar();
+                    }
+                });
+            });
         }
         
         // UI 초기화
@@ -502,9 +1527,32 @@
             secondChapterSelect.addEventListener('change', checkFormValidity);
             generateButton.addEventListener('click', generateDevotional);
             copyButton.addEventListener('click', copyDevotionalText);
+            saveButton.addEventListener('click', saveDevotional);
+            commentDateInput.addEventListener('change', loadComments);
+            postCommentButton.addEventListener('click', postComment);
+            prevMonthButton.addEventListener('click', () => changeMonth(-1));
+            nextMonthButton.addEventListener('click', () => changeMonth(1));
+            toggleBibleGridButton.addEventListener('click', toggleBibleGrid);
+            fontSizeSlider.addEventListener('input', updateFontSize);
+            exportDataButton.addEventListener('click', exportData);
+            clearDataButton.addEventListener('click', confirmClearData);
+            mobileActionButton.addEventListener('click', handleMobileAction);
+            themeToggleButton.addEventListener('click', toggleDarkMode);
+            
+            // 성경책 그리드 생성
+            generateBibleGrid();
+            
+            // 탭 설정
+            setupTabs();
             
             // 초기 폼 상태 확인
             checkFormValidity();
+            
+            // 터치 이벤트 최적화
+            setupTouchOptimizations();
+            
+            // 초기 저장된 묵상 내용 확인
+            checkForSavedDevotional();
         }
         
         // 성경 66권 표준 목록
@@ -519,6 +1567,134 @@
             '빌레몬서', '히브리서', '야고보서', '베드로전서', '베드로후서', '요한1서', '요한2서',
             '요한3서', '유다서', '요한계시록'
         ];
+        
+        // 구약/신약 구분
+        const oldTestamentBooks = standardBooks.slice(0, 39);
+        const newTestamentBooks = standardBooks.slice(39);
+        
+        // 성경책 아이콘 매핑
+        const bookIcons = {
+            '창세기': '🌱', '출애굽기': '🌊', '레위기': '⚖️', '민수기': '🔢', '신명기': '📜',
+            '여호수아': '⚔️', '사사기': '👑', '룻기': '🌾', '사무엘상': '👑', '사무엘하': '👑',
+            '열왕기상': '👑', '열왕기하': '👑', '역대상': '📚', '역대하': '📚', '에스라': '🏛️',
+            '느헤미야': '🧱', '에스더': '👸', '욥기': '🤲', '시편': '🎵', '잠언': '🧠',
+            '전도서': '🕰️', '아가': '❤️', '이사야': '🔮', '예레미야': '😢', '예레미야애가': '😭',
+            '에스겔': '👁️', '다니엘': '🦁', '호세아': '💔', '요엘': '🦗', '아모스': '🐑',
+            '오바댜': '⚡', '요나': '🐋', '미가': '⚖️', '나훔': '🏙️', '하박국': '❓',
+            '스바냐': '🔍', '학개': '🏗️', '스가랴': '🐎', '말라기': '✉️', '마태복음': '👨‍🏫',
+            '마가복음': '🦁', '누가복음': '👨‍⚕️', '요한복음': '🦅', '사도행전': '🕊️', '로마서': '⚖️',
+            '고린도전서': '💌', '고린도후서': '💌', '갈라디아서': '⛓️', '에베소서': '🛡️', '빌립보서': '😊',
+            '골로새서': '🔍', '데살로니가전서': '⏳', '데살로니가후서': '⏳', '디모데전서': '👨‍🦱',
+            '디모데후서': '👨‍🦱', '디도서': '🌿', '빌레몬서': '🤝', '히브리서': '🕯️', '야고보서': '🔧',
+            '베드로전서': '🗝️', '베드로후서': '🗝️', '요한1서': '❤️', '요한2서': '❤️',
+            '요한3서': '❤️', '유다서': '⚠️', '요한계시록': '📜'
+        };
+        
+        // 성경책 그리드 생성
+        function generateBibleGrid() {
+            oldTestamentGrid.innerHTML = '';
+            newTestamentGrid.innerHTML = '';
+            
+            // 데이터에 있는 성경책만 필터링
+            const validOldTestament = oldTestamentBooks.filter(book => book in bibleData);
+            const validNewTestament = newTestamentBooks.filter(book => book in bibleData);
+            
+            // 구약 성경책 그리드 생성
+            validOldTestament.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.className = 'bible-book button-touch';
+                bookElement.dataset.book = book;
+                
+                const iconElement = document.createElement('div');
+                iconElement.className = 'book-icon';
+                iconElement.textContent = bookIcons[book] || '📖';
+                
+                const nameElement = document.createElement('div');
+                nameElement.className = 'book-name';
+                nameElement.textContent = book;
+                
+                bookElement.appendChild(iconElement);
+                bookElement.appendChild(nameElement);
+                
+                bookElement.addEventListener('click', () => {
+                    selectBookFromGrid(book);
+                });
+                
+                oldTestamentGrid.appendChild(bookElement);
+            });
+            
+            // 신약 성경책 그리드 생성
+            validNewTestament.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.className = 'bible-book button-touch';
+                bookElement.dataset.book = book;
+                
+                const iconElement = document.createElement('div');
+                iconElement.className = 'book-icon';
+                iconElement.textContent = bookIcons[book] || '📖';
+                
+                const nameElement = document.createElement('div');
+                nameElement.className = 'book-name';
+                nameElement.textContent = book;
+                
+                bookElement.appendChild(iconElement);
+                bookElement.appendChild(nameElement);
+                
+                bookElement.addEventListener('click', () => {
+                    selectBookFromGrid(book);
+                });
+                
+                newTestamentGrid.appendChild(bookElement);
+            });
+        }
+        
+        // 그리드에서 성경책 선택
+        function selectBookFromGrid(book) {
+            // 선택 표시 업데이트
+            document.querySelectorAll('.bible-book').forEach(el => {
+                if (el.dataset.book === book) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+            
+            // 드롭다운 선택 업데이트
+            bookSelect.value = book;
+            
+            // 장 목록 업데이트
+            updateChapterOptions();
+            
+            // 그리드 닫기
+            bibleGridContainer.style.display = 'none';
+            toggleBibleGridButton.innerHTML = '<i class="fas fa-th toggle-icon"></i>성경책 목록 보기';
+        }
+        
+        // 성경책 목록 그리드 토글
+        function toggleBibleGrid() {
+            if (bibleGridContainer.style.display === 'none' || bibleGridContainer.style.display === '') {
+                bibleGridContainer.style.display = 'block';
+                toggleBibleGridButton.innerHTML = '<i class="fas fa-times toggle-icon"></i>목록 닫기';
+                
+                // 현재 선택된 책에 표시 추가
+                const selectedBook = bookSelect.value;
+                if (selectedBook) {
+                    document.querySelectorAll('.bible-book').forEach(el => {
+                        if (el.dataset.book === selectedBook) {
+                            el.classList.add('selected');
+                            
+                            // 스크롤 위치 조정
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            el.classList.remove('selected');
+                        }
+                    });
+                }
+            } else {
+                bibleGridContainer.style.display = 'none';
+                toggleBibleGridButton.innerHTML = '<i class="fas fa-th toggle-icon"></i>성경책 목록 보기';
+            }
+        }
         
         // 성경책 옵션 생성
         function generateBookOptions() {
@@ -648,7 +1824,9 @@
             
             return {
                 formattedDate: `${month}/${day}(${weekday})`,
-                weekdayIndex: date.getDay()
+                weekdayIndex: date.getDay(),
+                dateObj: date,
+                isoDateStr: dateStr
             };
         }
         
@@ -685,17 +1863,23 @@
                     devotionalElement.textContent = rawDevotionalText;
                     // 복사 버튼 표시
                     copyButton.style.display = 'block';
+                    saveButton.style.display = 'block';
                     
                     // 자동으로 클립보드에 복사
                     navigator.clipboard.writeText(rawDevotionalText)
                         .then(() => {
-                            copyButton.textContent = '✓ 복사됨';
+                            copyButton.innerHTML = '<i class="fas fa-check"></i> 복사됨';
                             copyButton.classList.add('copied');
                             showCopyMessage();
                         })
                         .catch(err => {
                             console.error('클립보드 복사 실패:', err);
                         });
+                    
+                    // 자동 저장 처리
+                    if (autoSaveCheckbox.checked && dateInfo) {
+                        saveDevotional();
+                    }
                     
                     return;
                 }
@@ -708,6 +1892,7 @@
                     devotionalElement.textContent = rawDevotionalText;
                     // 이 경우에는 복사 버튼 숨김
                     copyButton.style.display = 'none';
+                    saveButton.style.display = 'none';
                     return;
                 }
                 
@@ -721,6 +1906,7 @@
                         devotionalElement.textContent = rawDevotionalText;
                         // 이 경우에는 복사 버튼 숨김
                         copyButton.style.display = 'none';
+                        saveButton.style.display = 'none';
                         return;
                     }
                 }
@@ -794,21 +1980,23 @@
                 
                 devotionalElement.innerHTML = formattedDevotional;
                 
-                // 복사 버튼 표시
+                // 복사 및 저장 버튼 표시
                 copyButton.style.display = 'block';
-                copyButton.textContent = '📋 복사하기';
+                copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사하기';
                 copyButton.classList.remove('copied');
+                
+                saveButton.style.display = 'block';
                 
                 // 자동으로 클립보드에 복사
                 navigator.clipboard.writeText(rawDevotionalText)
                     .then(() => {
-                        copyButton.textContent = '✓ 복사됨';
+                        copyButton.innerHTML = '<i class="fas fa-check"></i> 복사됨';
                         copyButton.classList.add('copied');
                         showCopyMessage();
                         
                         // 3초 후 버튼 텍스트 원복
                         setTimeout(() => {
-                            copyButton.textContent = '📋 복사하기';
+                            copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사하기';
                             copyButton.classList.remove('copied');
                         }, 3000);
                     })
@@ -816,11 +2004,122 @@
                         console.error('클립보드 복사 실패:', err);
                     });
                 
+                // 자동 저장 처리
+                if (autoSaveCheckbox.checked && dateInfo) {
+                    saveDevotional();
+                }
+                
             } catch (error) {
                 console.error('묵상 생성 중 오류 발생:', error);
                 devotionalElement.textContent = `오류 발생: ${error.message}`;
                 // 오류 시 복사 버튼 숨김
                 copyButton.style.display = 'none';
+                saveButton.style.display = 'none';
+            }
+        }
+        
+        // 묵상 내용 저장
+        function saveDevotional() {
+            if (!rawDevotionalText || !dateInput.value) return;
+            
+            const dateKey = dateInput.value;
+            
+            // 저장된 묵상 데이터 업데이트
+            savedDevotionals[dateKey] = {
+                content: rawDevotionalText,
+                timestamp: new Date().toISOString(),
+                book: bookSelect.value,
+                chapter: chapterSelect.value,
+                secondBook: secondBookSelect.value || null,
+                secondChapter: secondChapterSelect.value || null
+            };
+            
+            // 로컬 스토리지에 저장
+            localStorage.setItem('savedDevotionals', JSON.stringify(savedDevotionals));
+            
+            // 저장 성공 메시지
+            saveButton.innerHTML = '<i class="fas fa-check"></i> 저장됨';
+            setTimeout(() => {
+                saveButton.innerHTML = '<i class="fas fa-save"></i> 저장하기';
+            }, 3000);
+            
+            // 달력 업데이트
+            renderCalendar();
+        }
+        
+        // 저장된 묵상 불러오기
+        function loadSavedDevotional(dateStr) {
+            if (!savedDevotionals[dateStr]) return false;
+            
+            const devotionalData = savedDevotionals[dateStr];
+            
+            // 날짜 설정
+            dateInput.value = dateStr;
+            
+            // 성경책 및 장 설정
+            if (devotionalData.book && devotionalData.chapter) {
+                bookSelect.value = devotionalData.book;
+                updateChapterOptions();
+                
+                // 약간의 지연 후 장 선택 (옵션이 로드될 시간 필요)
+                setTimeout(() => {
+                    chapterSelect.value = devotionalData.chapter;
+                    
+                    // 두 번째 성경책 설정 (있는 경우)
+                    if (devotionalData.secondBook && devotionalData.secondChapter) {
+                        secondBookSelect.value = devotionalData.secondBook;
+                        updateSecondChapterOptions();
+                        
+                        // 약간의 지연 후 두 번째 장 선택
+                        setTimeout(() => {
+                            secondChapterSelect.value = devotionalData.secondChapter;
+                            
+                            // 묵상 표시
+                            rawDevotionalText = devotionalData.content;
+                            const formattedDevotional = rawDevotionalText
+                                .replace(/\n/g, '<br>')
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                            
+                            devotionalElement.innerHTML = formattedDevotional;
+                            
+                            // 버튼 표시
+                            copyButton.style.display = 'block';
+                            copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사하기';
+                            copyButton.classList.remove('copied');
+                            
+                            saveButton.style.display = 'block';
+                        }, 100);
+                    } else {
+                        // 두 번째 성경책이 없는 경우
+                        secondBookSelect.value = '';
+                        secondChapterSelect.innerHTML = '<option value="">선택하지 않음</option>';
+                        
+                        // 묵상 표시
+                        rawDevotionalText = devotionalData.content;
+                        const formattedDevotional = rawDevotionalText
+                            .replace(/\n/g, '<br>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        
+                        devotionalElement.innerHTML = formattedDevotional;
+                        
+                        // 버튼 표시
+                        copyButton.style.display = 'block';
+                        copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사하기';
+                        copyButton.classList.remove('copied');
+                        
+                        saveButton.style.display = 'block';
+                    }
+                }, 100);
+            }
+            
+            return true;
+        }
+        
+        // 현재 선택된 날짜에 저장된 묵상이 있는지 확인
+        function checkForSavedDevotional() {
+            const currentDate = dateInput.value;
+            if (currentDate && savedDevotionals[currentDate]) {
+                loadSavedDevotional(currentDate);
             }
         }
         
@@ -832,7 +2131,7 @@
             navigator.clipboard.writeText(rawDevotionalText)
                 .then(() => {
                     // 성공 시 버튼 텍스트 변경
-                    copyButton.textContent = '✓ 복사됨';
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> 복사됨';
                     copyButton.classList.add('copied');
                     
                     // 성공 메시지 표시
@@ -840,17 +2139,17 @@
                     
                     // 3초 후 버튼 텍스트 원복
                     setTimeout(() => {
-                        copyButton.textContent = '📋 복사하기';
+                        copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사하기';
                         copyButton.classList.remove('copied');
                     }, 3000);
                 })
                 .catch(err => {
                     console.error('클립보드 복사 실패:', err);
-                    copyButton.textContent = '❌ 복사 실패';
+                    copyButton.innerHTML = '<i class="fas fa-times"></i> 복사 실패';
                     
                     // 3초 후 버튼 텍스트 원복
                     setTimeout(() => {
-                        copyButton.textContent = '📋 복사하기';
+                        copyButton.innerHTML = '<i class="fas fa-copy"></i> 복사하기';
                     }, 3000);
                 });
         }
@@ -863,8 +2162,573 @@
             }, 2000);
         }
         
+        // 댓글 게시 기능
+        function postComment() {
+            const commentText = commentInput.value.trim();
+            const commentDate = commentDateInput.value;
+            
+            // 해당 날짜의 댓글 가져오기
+            const dateComments = commentsData[commentDate] || [];
+            
+            // 댓글 목록 요소 초기화
+            commentList.innerHTML = '';
+            
+            if (dateComments.length === 0) {
+                // 댓글이 없는 경우 메시지 표시
+                commentList.innerHTML = `
+                    <div class="empty-comments">
+                        <i class="fas fa-comment-slash" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!</p>
+                    </div>
+                `;
+                
+                // 페이지네이션 숨김
+                commentPagination.innerHTML = '';
+                return;
+            }
+            
+            // 페이지네이션 계산
+            const totalPages = Math.ceil(dateComments.length / commentsPerPage);
+            if (currentPage > totalPages) {
+                currentPage = 1;
+            }
+            
+            // 현재 페이지의 댓글 가져오기
+            const startIndex = (currentPage - 1) * commentsPerPage;
+            const endIndex = Math.min(startIndex + commentsPerPage, dateComments.length);
+            const pageComments = dateComments.slice(startIndex, endIndex);
+            
+            // 댓글 렌더링
+            pageComments.forEach(comment => {
+                const commentTime = new Date(comment.timestamp);
+                const timeString = commentTime.toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+                
+                const likeButtonClass = comment.liked ? 'active' : '';
+                
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment-card';
+                commentElement.innerHTML = `
+                    <div class="comment-header">
+                        <div class="comment-date">
+                            <i class="fas fa-clock"></i> ${timeString}
+                        </div>
+                        <div class="comment-actions">
+                            <button class="comment-action" data-action="delete" data-id="${comment.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="comment-content">${comment.content}</div>
+                    <div class="comment-feedback">
+                        <div class="comment-reaction ${likeButtonClass}" data-action="like" data-id="${comment.id}">
+                            <i class="fas fa-heart"></i> <span>${comment.likes}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // 이벤트 리스너 추가
+                const deleteButton = commentElement.querySelector('[data-action="delete"]');
+                deleteButton.addEventListener('click', () => deleteComment(comment.id, commentDate));
+                
+                const likeButton = commentElement.querySelector('[data-action="like"]');
+                likeButton.addEventListener('click', () => likeComment(comment.id, commentDate));
+                
+                commentList.appendChild(commentElement);
+            });
+            
+            // 페이지네이션 렌더링
+            renderPagination(totalPages);
+        }
+        
+        // 페이지네이션 렌더링
+        function renderPagination(totalPages) {
+            commentPagination.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                return;
+            }
+            
+            // 이전 페이지 버튼
+            const prevButton = document.createElement('button');
+            prevButton.className = `page-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    loadComments();
+                }
+            });
+            commentPagination.appendChild(prevButton);
+            
+            // 페이지 번호 버튼
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4 && startPage > 1) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    loadComments();
+                });
+                commentPagination.appendChild(pageButton);
+            }
+            
+            // 다음 페이지 버튼
+            const nextButton = document.createElement('button');
+            nextButton.className = `page-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadComments();
+                }
+            });
+            commentPagination.appendChild(nextButton);
+        }
+        
+        // 댓글 삭제
+        function deleteComment(commentId, date) {
+            if (!confirm('정말 이 댓글을 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            if (commentsData[date]) {
+                // 해당 ID의 댓글 찾기 및 삭제
+                commentsData[date] = commentsData[date].filter(comment => comment.id !== commentId);
+                
+                // 로컬 스토리지 업데이트
+                localStorage.setItem('commentsData', JSON.stringify(commentsData));
+                
+                // 댓글 목록 새로고침
+                loadComments();
+                
+                // 달력 업데이트
+                renderCalendar();
+            }
+        }
+        
+        // 댓글 좋아요
+        function likeComment(commentId, date) {
+            if (commentsData[date]) {
+                // 해당 ID의 댓글 찾기
+                const commentIndex = commentsData[date].findIndex(comment => comment.id === commentId);
+                
+                if (commentIndex !== -1) {
+                    const comment = commentsData[date][commentIndex];
+                    
+                    // 좋아요 상태 토글
+                    if (comment.liked) {
+                        comment.likes = Math.max(0, comment.likes - 1);
+                        comment.liked = false;
+                    } else {
+                        comment.likes++;
+                        comment.liked = true;
+                    }
+                    
+                    // 로컬 스토리지 업데이트
+                    localStorage.setItem('commentsData', JSON.stringify(commentsData));
+                    
+                    // 댓글 목록 새로고침
+                    loadComments();
+                }
+            }
+        }
+        
+        // 달력 렌더링
+        function renderCalendar() {
+            const year = currentMonthDate.getFullYear();
+            const month = currentMonthDate.getMonth();
+            
+            // 월 제목 업데이트
+            currentMonthElement.textContent = `${year}년 ${month + 1}월`;
+            
+            // 달력 일자 초기화
+            calendarDays.innerHTML = '';
+            
+            // 해당 월의 첫 날
+            const firstDay = new Date(year, month, 1);
+            // 해당 월의 마지막 날
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // 첫 날의 요일 (0: 일요일, 1: 월요일, ...)
+            const firstDayOfWeek = firstDay.getDay();
+            // 마지막 날의 날짜
+            const lastDate = lastDay.getDate();
+            
+            // 이전 달의 마지막 날
+            const prevLastDay = new Date(year, month, 0);
+            const prevLastDate = prevLastDay.getDate();
+            
+            // 달력에 표시할 총 일수 (최대 42일: 6주)
+            const totalDays = 42;
+            
+            // 오늘 날짜
+            const today = new Date();
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth();
+            const todayDate = today.getDate();
+            
+            // 이전 달의 날짜 렌더링
+            for (let i = firstDayOfWeek; i > 0; i--) {
+                const day = prevLastDate - i + 1;
+                const dateObj = new Date(year, month - 1, day);
+                const dateStr = dateToString(dateObj);
+                
+                // 해당 날짜에 저장된 데이터 확인
+                const hasDevotional = savedDevotionals[dateStr] ? true : false;
+                const hasComments = commentsData[dateStr] && commentsData[dateStr].length > 0 ? true : false;
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.dataset.date = dateStr;
+                
+                let dayContent = `<div class="day-number">${day}</div>`;
+                
+                if (hasDevotional) {
+                    dayContent += `<div class="has-devotional"><i class="fas fa-book"></i></div>`;
+                }
+                
+                if (hasComments) {
+                    dayContent += `<div class="has-comment"></div>`;
+                }
+                
+                dayElement.innerHTML = dayContent;
+                
+                // 클릭 이벤트 리스너 추가
+                dayElement.addEventListener('click', () => selectCalendarDay(dateStr));
+                
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // 현재 달의 날짜 렌더링
+            for (let i = 1; i <= lastDate; i++) {
+                const dateObj = new Date(year, month, i);
+                const dateStr = dateToString(dateObj);
+                
+                // 해당 날짜에 저장된 데이터 확인
+                const hasDevotional = savedDevotionals[dateStr] ? true : false;
+                const hasComments = commentsData[dateStr] && commentsData[dateStr].length > 0 ? true : false;
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.dataset.date = dateStr;
+                
+                // 현재 날짜가 오늘인지 확인
+                if (year === todayYear && month === todayMonth && i === todayDate) {
+                    dayElement.classList.add('today');
+                }
+                
+                // 일요일인 경우 강조
+                if (dateObj.getDay() === 0) {
+                    dayElement.style.color = '#dc3545';
+                }
+                
+                let dayContent = `<div class="day-number">${i}</div>`;
+                
+                if (hasDevotional) {
+                    dayContent += `<div class="has-devotional"><i class="fas fa-book"></i></div>`;
+                }
+                
+                if (hasComments) {
+                    dayContent += `<div class="has-comment"></div>`;
+                }
+                
+                dayElement.innerHTML = dayContent;
+                
+                // 클릭 이벤트 리스너 추가
+                dayElement.addEventListener('click', () => selectCalendarDay(dateStr));
+                
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // 다음 달의 날짜로 나머지 채우기
+            const remainingDays = totalDays - (firstDayOfWeek + lastDate);
+            for (let i = 1; i <= remainingDays; i++) {
+                const dateObj = new Date(year, month + 1, i);
+                const dateStr = dateToString(dateObj);
+                
+                // 해당 날짜에 저장된 데이터 확인
+                const hasDevotional = savedDevotionals[dateStr] ? true : false;
+                const hasComments = commentsData[dateStr] && commentsData[dateStr].length > 0 ? true : false;
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.dataset.date = dateStr;
+                
+                let dayContent = `<div class="day-number">${i}</div>`;
+                
+                if (hasDevotional) {
+                    dayContent += `<div class="has-devotional"><i class="fas fa-book"></i></div>`;
+                }
+                
+                if (hasComments) {
+                    dayContent += `<div class="has-comment"></div>`;
+                }
+                
+                dayElement.innerHTML = dayContent;
+                
+                // 클릭 이벤트 리스너 추가
+                dayElement.addEventListener('click', () => selectCalendarDay(dateStr));
+                
+                calendarDays.appendChild(dayElement);
+            }
+        }
+        
+        // 날짜 선택 처리
+        function selectCalendarDay(dateStr) {
+            // 모든 탭 내 날짜 입력 필드 업데이트
+            dateInput.value = dateStr;
+            commentDateInput.value = dateStr;
+            
+            // 저장된 묵상 불러오기
+            if (savedDevotionals[dateStr]) {
+                loadSavedDevotional(dateStr);
+                
+                // 생성기 탭으로 이동
+                document.querySelector('.tab-btn[data-tab="generator"]').click();
+            }
+            
+            // 댓글 로드
+            loadComments();
+            
+            // 모바일인 경우 댓글 탭으로 이동
+            if (window.innerWidth <= 768 && commentsData[dateStr] && commentsData[dateStr].length > 0) {
+                document.querySelector('.tab-btn[data-tab="comments"]').click();
+            }
+        }
+        
+        // 날짜를 문자열로 변환 (YYYY-MM-DD)
+        function dateToString(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // 월 변경
+        function changeMonth(direction) {
+            currentMonthDate.setMonth(currentMonthDate.getMonth() + direction);
+            renderCalendar();
+        }
+        
+        // 글자 크기 조정
+        function updateFontSize() {
+            const fontSize = fontSizeSlider.value;
+            fontSizeValue.textContent = `${fontSize}%`;
+            document.documentElement.style.fontSize = `${fontSize}%`;
+            
+            // 설정 저장
+            localStorage.setItem('fontSize', fontSize);
+        }
+        
+        // 다크 모드 토글
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            
+            if (darkMode) {
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+                document.documentElement.style.setProperty('--primary-color', '#63a4d8');
+                document.documentElement.style.setProperty('--primary-dark', '#4d89b8');
+                document.documentElement.style.setProperty('--light-bg', '#1e1e1e');
+                document.documentElement.style.setProperty('--white', '#2d2d2d');
+                document.documentElement.style.setProperty('--text-color', '#e0e0e0');
+                document.documentElement.style.setProperty('--text-light', '#a0a0a0');
+                document.documentElement.style.setProperty('--border-color', '#444444');
+            } else {
+                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i>';
+                document.documentElement.style.setProperty('--primary-color', '#4682B4');
+                document.documentElement.style.setProperty('--primary-dark', '#366b96');
+                document.documentElement.style.setProperty('--light-bg', '#f8f9fa');
+                document.documentElement.style.setProperty('--white', '#ffffff');
+                document.documentElement.style.setProperty('--text-color', '#333');
+                document.documentElement.style.setProperty('--text-light', '#6c757d');
+                document.documentElement.style.setProperty('--border-color', '#ced4da');
+            }
+            
+            // 설정 저장
+            localStorage.setItem('darkMode', darkMode);
+        }
+        
+        // 데이터 내보내기
+        function exportData() {
+            const exportData = {
+                savedDevotionals,
+                commentsData,
+                settings: {
+                    darkMode,
+                    fontSize: fontSizeSlider.value,
+                    autoSave: autoSaveCheckbox.checked
+                },
+                exportDate: new Date().toISOString()
+            };
+            
+            // JSON 문자열로 변환
+            const jsonString = JSON.stringify(exportData, null, 2);
+            
+            // Blob 생성
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            
+            // 다운로드 링크 생성
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = `만나_데이터_${new Date().toISOString().slice(0, 10)}.json`;
+            
+            // 링크 클릭하여 다운로드
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+        
+        // 데이터 삭제 확인
+        function confirmClearData() {
+            if (confirm('정말 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                // 로컬 스토리지 초기화
+                localStorage.removeItem('savedDevotionals');
+                localStorage.removeItem('commentsData');
+                
+                // 데이터 초기화
+                savedDevotionals = {};
+                commentsData = {};
+                
+                // UI 업데이트
+                devotionalElement.textContent = '성경책과 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.';
+                copyButton.style.display = 'none';
+                saveButton.style.display = 'none';
+                
+                loadComments();
+                renderCalendar();
+                
+                alert('모든 데이터가 삭제되었습니다.');
+            }
+        }
+        
+        // 모바일 작업 버튼 처리
+        function handleMobileAction() {
+            // 현재 활성 탭에 따라 다른 동작 수행
+            const activeTab = document.querySelector('.tab-content.active').id;
+            
+            switch (activeTab) {
+                case 'generatorTab':
+                    // 묵상 생성 탭에서는 묵상 생성 실행
+                    if (!generateButton.disabled) {
+                        generateDevotional();
+                    } else {
+                        // 성경책 선택 목록 표시
+                        toggleBibleGrid();
+                    }
+                    break;
+                    
+                case 'commentsTab':
+                    // 댓글 탭에서는 댓글 포커스
+                    commentInput.focus();
+                    // 스크롤 이동
+                    commentInput.scrollIntoView({ behavior: 'smooth' });
+                    break;
+                    
+                case 'calendarTab':
+                    // 달력 탭에서는 오늘 날짜로 이동
+                    currentMonthDate = new Date();
+                    renderCalendar();
+                    break;
+                    
+                case 'settingsTab':
+                    // 설정 탭에서는 아무 동작 없음
+                    break;
+            }
+        }
+        
+        // 터치 최적화 설정
+        function setupTouchOptimizations() {
+            // 터치 이벤트 시 진동 피드백 (지원하는 기기에서만)
+            const touchElements = document.querySelectorAll('.button-touch, .calendar-day, .bible-book, .tab-btn');
+            
+            touchElements.forEach(element => {
+                element.addEventListener('touchstart', () => {
+                    if (window.navigator.vibrate) {
+                        window.navigator.vibrate(10);
+                    }
+                });
+            });
+            
+            // 더블 탭 확대 방지
+            document.addEventListener('touchmove', function(event) {
+                if (event.scale !== 1) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
+            
+            // 모바일 환경 체크 및 UI 조정
+            if (window.innerWidth <= 768) {
+                document.body.classList.add('mobile');
+            }
+            
+            window.addEventListener('resize', () => {
+                if (window.innerWidth <= 768) {
+                    document.body.classList.add('mobile');
+                } else {
+                    document.body.classList.remove('mobile');
+                }
+            });
+        }
+        
         // 앱 시작
         loadBibleData();
     </script>
 </body>
 </html>
+            if (!commentText) {
+                alert('댓글 내용을 입력해주세요.');
+                return;
+            }
+            
+            if (!commentDate) {
+                alert('날짜를 선택해주세요.');
+                return;
+            }
+            
+            // 댓글 객체 생성
+            const newComment = {
+                id: Date.now().toString(),
+                content: commentText,
+                timestamp: new Date().toISOString(),
+                date: commentDate,
+                likes: 0,
+                liked: false
+            };
+            
+            // 해당 날짜의 댓글 목록 가져오기 또는 생성
+            if (!commentsData[commentDate]) {
+                commentsData[commentDate] = [];
+            }
+            
+            // 새 댓글 추가
+            commentsData[commentDate].unshift(newComment);
+            
+            // 로컬 스토리지에 저장
+            localStorage.setItem('commentsData', JSON.stringify(commentsData));
+            
+            // 입력 필드 초기화
+            commentInput.value = '';
+            
+            // 댓글 목록 새로고침
+            loadComments();
+            
+            // 달력 업데이트
+            renderCalendar();
+        }
+        
+        // 댓글 로드 및 표시
+        function loadComments() {
+            const commentDate = commentDateInput.value;
