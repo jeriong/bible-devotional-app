@@ -201,6 +201,37 @@
             border-radius: 5px;
             border-left: 4px solid #4682B4;
         }
+        
+        /* 복사 버튼 그룹 (3일 연속 생성용) */
+        .copy-buttons-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            border: 2px solid #4682B4;
+            flex-wrap: wrap;
+        }
+        .copy-buttons-group .copy-button {
+            flex: 1;
+            min-width: 150px;
+            margin-top: 0;
+        }
+        .copy-buttons-group .copy-button:nth-child(1) {
+            background-color: #4682B4;
+        }
+        .copy-buttons-group .copy-button:nth-child(2) {
+            background-color: #5a9bd5;
+        }
+        .copy-buttons-group .copy-button:nth-child(3) {
+            background-color: #6eb5e8;
+        }
+        .copy-buttons-group .copy-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
         strong {
             color: #366b96;
         }
@@ -242,6 +273,12 @@
             .devotional-header .copy-button {
                 padding: 6px 12px;
                 font-size: 14px;
+            }
+            .copy-buttons-group {
+                flex-direction: column;
+            }
+            .copy-buttons-group .copy-button {
+                min-width: 100%;
             }
         }
         
@@ -1106,13 +1143,12 @@
                 let currentSecondBookInfo = secondSelectedBook ? 
                     { book: secondSelectedBook, chapter: secondSelectedChapter } : null;
                 
-                // 3일치 생성
-                let daysGenerated = 0;
+                // 3일치 데이터 수집
+                const devotionalData = [];
                 let attempts = 0;
                 const maxAttempts = 10; // 무한 루프 방지
-                let firstDayText = null; // 1일차 텍스트 저장
                 
-                while (daysGenerated < 3 && attempts < maxAttempts) {
+                while (devotionalData.length < 3 && attempts < maxAttempts) {
                     attempts++;
                     
                     // 날짜 포맷
@@ -1128,15 +1164,12 @@
                     const chapterData = bibleData[currentBookInfo.book]?.[currentBookInfo.chapter.toString()];
                     if (!chapterData) {
                         const errorText = `${currentBookInfo.book} ${currentBookInfo.chapter}장의 데이터를 찾을 수 없습니다.`;
-                        const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, errorText, errorText);
-                        devotionalContainer.appendChild(container);
+                        devotionalData.push({
+                            dateStr: dateInfo.formattedDate,
+                            rawText: errorText,
+                            formattedText: errorText
+                        });
                         
-                        // 1일차 텍스트 저장
-                        if (daysGenerated === 0) {
-                            firstDayText = errorText;
-                        }
-                        
-                        daysGenerated++;
                         currentDate.setDate(currentDate.getDate() + 1);
                         
                         // 다음 성경책으로 이동
@@ -1153,15 +1186,12 @@
                         secondChapterData = bibleData[currentSecondBookInfo.book]?.[currentSecondBookInfo.chapter.toString()];
                         if (!secondChapterData) {
                             const errorText = `${currentSecondBookInfo.book} ${currentSecondBookInfo.chapter}장의 데이터를 찾을 수 없습니다.`;
-                            const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, errorText, errorText);
-                            devotionalContainer.appendChild(container);
+                            devotionalData.push({
+                                dateStr: dateInfo.formattedDate,
+                                rawText: errorText,
+                                formattedText: errorText
+                            });
                             
-                            // 1일차 텍스트 저장
-                            if (daysGenerated === 0) {
-                                firstDayText = errorText;
-                            }
-                            
-                            daysGenerated++;
                             currentDate.setDate(currentDate.getDate() + 1);
                             
                             // 다음 성경책으로 이동
@@ -1184,16 +1214,11 @@
                         secondChapterData
                     );
                     
-                    // 1일차 텍스트 저장
-                    if (daysGenerated === 0) {
-                        firstDayText = devotionalText.raw;
-                    }
-                    
-                    // 컨테이너 생성 및 추가
-                    const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, devotionalText.raw, devotionalText.formatted);
-                    devotionalContainer.appendChild(container);
-                    
-                    daysGenerated++;
+                    devotionalData.push({
+                        dateStr: dateInfo.formattedDate,
+                        rawText: devotionalText.raw,
+                        formattedText: devotionalText.formatted
+                    });
                     
                     // 다음 날짜로 이동
                     currentDate.setDate(currentDate.getDate() + 1);
@@ -1219,11 +1244,36 @@
                     }
                 }
                 
-                if (daysGenerated === 0) {
+                if (devotionalData.length === 0) {
                     devotionalContainer.innerHTML = '<div class="devotional">묵상을 생성할 수 없습니다. 성경 데이터를 확인해주세요.</div>';
-                } else if (firstDayText) {
-                    // 1일차 텍스트를 자동으로 클립보드에 복사
-                    navigator.clipboard.writeText(firstDayText)
+                    return;
+                }
+                
+                // 복사 버튼 그룹 생성 (최상단)
+                const copyButtonsGroup = document.createElement('div');
+                copyButtonsGroup.className = 'copy-buttons-group';
+                
+                devotionalData.forEach((data, index) => {
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'copy-button';
+                    copyBtn.textContent = `📋 ${index + 1}일차 복사 (${data.dateStr})`;
+                    copyBtn.onclick = function() {
+                        copySpecificDevotional(data.rawText, copyBtn);
+                    };
+                    copyButtonsGroup.appendChild(copyBtn);
+                });
+                
+                devotionalContainer.appendChild(copyButtonsGroup);
+                
+                // 각 날짜별 묵상 내용 추가 (복사 버튼 없이)
+                devotionalData.forEach((data, index) => {
+                    const container = createDevotionalContainerWithoutButton(index, data.dateStr, data.formattedText);
+                    devotionalContainer.appendChild(container);
+                });
+                
+                // 1일차 텍스트를 자동으로 클립보드에 복사
+                if (devotionalData.length > 0) {
+                    navigator.clipboard.writeText(devotionalData[0].rawText)
                         .then(() => {
                             showCopyMessage();
                             console.log('1일차 묵상이 클립보드에 복사되었습니다.');
@@ -1268,6 +1318,25 @@
             devotional.innerHTML = formattedText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
             container.appendChild(header);
+            container.appendChild(devotional);
+            
+            return container;
+        }
+        
+        // 복사 버튼이 없는 묵상 컨테이너 생성 (3일 연속용)
+        function createDevotionalContainerWithoutButton(index, dateStr, formattedText) {
+            const container = document.createElement('div');
+            container.className = 'devotional-container';
+            
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'devotional-date-header';
+            dateHeader.textContent = `📅 ${dateStr}`;
+            
+            const devotional = document.createElement('div');
+            devotional.className = 'devotional';
+            devotional.innerHTML = formattedText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            container.appendChild(dateHeader);
             container.appendChild(devotional);
             
             return container;
