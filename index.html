@@ -174,6 +174,25 @@
         .devotional-container:last-child {
             margin-bottom: 0;
         }
+        .devotional-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        .devotional-date-header {
+            font-weight: 600;
+            color: #4682B4;
+            font-size: 18px;
+            flex: 1;
+        }
+        .devotional-header .copy-button {
+            margin-top: 0;
+            width: auto;
+            flex-shrink: 0;
+            padding: 8px 16px;
+        }
         .devotional {
             white-space: pre-wrap;
             line-height: 1.6;
@@ -181,12 +200,6 @@
             background-color: #f8f9fa;
             border-radius: 5px;
             border-left: 4px solid #4682B4;
-        }
-        .devotional-date-header {
-            font-weight: 600;
-            color: #4682B4;
-            margin-bottom: 10px;
-            font-size: 18px;
         }
         strong {
             color: #366b96;
@@ -218,6 +231,17 @@
             }
             .container {
                 padding: 15px;
+            }
+            .devotional-header {
+                flex-direction: row;
+                align-items: center;
+            }
+            .devotional-date-header {
+                font-size: 16px;
+            }
+            .devotional-header .copy-button {
+                padding: 6px 12px;
+                font-size: 14px;
             }
         }
         
@@ -1086,6 +1110,7 @@
                 let daysGenerated = 0;
                 let attempts = 0;
                 const maxAttempts = 10; // 무한 루프 방지
+                let firstDayText = null; // 1일차 텍스트 저장
                 
                 while (daysGenerated < 3 && attempts < maxAttempts) {
                     attempts++;
@@ -1105,6 +1130,12 @@
                         const errorText = `${currentBookInfo.book} ${currentBookInfo.chapter}장의 데이터를 찾을 수 없습니다.`;
                         const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, errorText, errorText);
                         devotionalContainer.appendChild(container);
+                        
+                        // 1일차 텍스트 저장
+                        if (daysGenerated === 0) {
+                            firstDayText = errorText;
+                        }
+                        
                         daysGenerated++;
                         currentDate.setDate(currentDate.getDate() + 1);
                         
@@ -1124,6 +1155,12 @@
                             const errorText = `${currentSecondBookInfo.book} ${currentSecondBookInfo.chapter}장의 데이터를 찾을 수 없습니다.`;
                             const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, errorText, errorText);
                             devotionalContainer.appendChild(container);
+                            
+                            // 1일차 텍스트 저장
+                            if (daysGenerated === 0) {
+                                firstDayText = errorText;
+                            }
+                            
                             daysGenerated++;
                             currentDate.setDate(currentDate.getDate() + 1);
                             
@@ -1146,6 +1183,11 @@
                         currentSecondBookInfo?.chapter,
                         secondChapterData
                     );
+                    
+                    // 1일차 텍스트 저장
+                    if (daysGenerated === 0) {
+                        firstDayText = devotionalText.raw;
+                    }
                     
                     // 컨테이너 생성 및 추가
                     const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, devotionalText.raw, devotionalText.formatted);
@@ -1179,6 +1221,16 @@
                 
                 if (daysGenerated === 0) {
                     devotionalContainer.innerHTML = '<div class="devotional">묵상을 생성할 수 없습니다. 성경 데이터를 확인해주세요.</div>';
+                } else if (firstDayText) {
+                    // 1일차 텍스트를 자동으로 클립보드에 복사
+                    navigator.clipboard.writeText(firstDayText)
+                        .then(() => {
+                            showCopyMessage();
+                            console.log('1일차 묵상이 클립보드에 복사되었습니다.');
+                        })
+                        .catch(err => {
+                            console.error('클립보드 복사 실패:', err);
+                        });
                 }
                 
             } catch (error) {
@@ -1192,13 +1244,13 @@
             const container = document.createElement('div');
             container.className = 'devotional-container';
             
+            // 헤더 (날짜 + 복사 버튼)
+            const header = document.createElement('div');
+            header.className = 'devotional-header';
+            
             const dateHeader = document.createElement('div');
             dateHeader.className = 'devotional-date-header';
             dateHeader.textContent = `📅 ${dateStr}`;
-            
-            const devotional = document.createElement('div');
-            devotional.className = 'devotional';
-            devotional.innerHTML = formattedText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-button';
@@ -1208,9 +1260,15 @@
                 copySpecificDevotional(rawText, copyBtn);
             };
             
-            container.appendChild(dateHeader);
+            header.appendChild(dateHeader);
+            header.appendChild(copyBtn);
+            
+            const devotional = document.createElement('div');
+            devotional.className = 'devotional';
+            devotional.innerHTML = formattedText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            container.appendChild(header);
             container.appendChild(devotional);
-            container.appendChild(copyBtn);
             
             return container;
         }
