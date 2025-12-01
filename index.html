@@ -55,8 +55,8 @@
             font-weight: 500;
         }
         .success {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #d4e6f1;
+            color: #1a4d7a;
         }
         .error {
             background-color: #f8d7da;
@@ -130,31 +130,31 @@
         }
         
         #generate3DaysButton {
-            background-color: #28a745;
+            background-color: #5a7ba6;
         }
         #generate3DaysButton:hover {
-            background-color: #218838;
+            background-color: #4a6a94;
         }
         
         #parseButton {
-            background-color: #fd7e14;
+            background-color: #6b8fb3;
             margin-top: 10px;
         }
         #parseButton:hover {
-            background-color: #e67700;
+            background-color: #5a7ea0;
         }
         
         /* 복사 버튼 */
         .copy-button {
-            background-color: #28a745;
+            background-color: #5a7ba6;
             margin-top: 10px;
             display: none; /* 초기에는 숨김 */
         }
         .copy-button:hover {
-            background-color: #218838;
+            background-color: #4a6a94;
         }
         .copy-button.copied {
-            background-color: #6c757d;
+            background-color: #6c8aa8;
         }
         
         /* 섹션 제목 */
@@ -208,28 +208,37 @@
             gap: 10px;
             margin-bottom: 20px;
             padding: 15px;
-            background-color: #f0f8ff;
+            background-color: #f0f4f8;
             border-radius: 8px;
             border: 2px solid #4682B4;
             flex-wrap: wrap;
         }
         .copy-buttons-group .copy-button {
-            flex: 1;
-            min-width: 150px;
             margin-top: 0;
             display: block !important; /* 강제로 표시 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        /* 1일차 버튼 - 작게 (자동 복사되므로) */
         .copy-buttons-group .copy-button:nth-child(1) {
+            flex: 0.7;
+            min-width: 120px;
+            background-color: #6b8fb3;
+        }
+        /* 2일차, 3일차 버튼 - 균일하게 */
+        .copy-buttons-group .copy-button:nth-child(2) {
+            flex: 1;
+            min-width: 150px;
             background-color: #4682B4;
         }
-        .copy-buttons-group .copy-button:nth-child(2) {
-            background-color: #5a9bd5;
-        }
         .copy-buttons-group .copy-button:nth-child(3) {
-            background-color: #6eb5e8;
+            flex: 1;
+            min-width: 150px;
+            background-color: #4682B4;
         }
         .copy-buttons-group .copy-button:hover {
-            opacity: 0.9;
+            opacity: 0.85;
             transform: translateY(-2px);
         }
         
@@ -243,7 +252,7 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #28a745;
+            background-color: #4682B4;
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
@@ -277,9 +286,11 @@
             }
             .copy-buttons-group {
                 flex-direction: column;
+                gap: 8px;
             }
             .copy-buttons-group .copy-button {
                 min-width: 100%;
+                flex: 1 !important;
             }
         }
         
@@ -1257,7 +1268,12 @@
                 devotionalData.forEach((data, index) => {
                     const copyBtn = document.createElement('button');
                     copyBtn.className = 'copy-button';
-                    copyBtn.textContent = `📋 ${index + 1}일차 복사 (${data.dateStr})`;
+                    // 1일차는 간단하게, 2-3일차는 날짜 포함
+                    if (index === 0) {
+                        copyBtn.textContent = `📋 1일차 (자동복사됨)`;
+                    } else {
+                        copyBtn.textContent = `📋 ${index + 1}일차 ${data.dateStr}`;
+                    }
                     copyBtn.onclick = function() {
                         copySpecificDevotional(data.rawText, copyBtn);
                     };
