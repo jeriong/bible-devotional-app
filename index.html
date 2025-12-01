@@ -587,6 +587,40 @@
             '요한3서', '유다서', '요한계시록'
         ];
         
+        // 성경책의 마지막 장 번호 가져오기
+        function getLastChapter(book) {
+            if (!bibleData[book]) return null;
+            const chapters = Object.keys(bibleData[book]).map(ch => parseInt(ch));
+            return Math.max(...chapters);
+        }
+        
+        // 다음 성경책과 장 가져오기
+        function getNextBookAndChapter(currentBook, currentChapter) {
+            const lastChapter = getLastChapter(currentBook);
+            
+            // 현재 성경책에 다음 장이 있으면 그대로 반환
+            if (currentChapter < lastChapter) {
+                return { book: currentBook, chapter: currentChapter + 1 };
+            }
+            
+            // 마지막 장이면 다음 성경책의 1장으로
+            const currentIndex = standardBooks.indexOf(currentBook);
+            if (currentIndex === -1 || currentIndex === standardBooks.length - 1) {
+                // 마지막 성경책이면 null 반환
+                return null;
+            }
+            
+            // 다음 성경책 찾기 (데이터에 있는 책만)
+            for (let i = currentIndex + 1; i < standardBooks.length; i++) {
+                const nextBook = standardBooks[i];
+                if (bibleData[nextBook]) {
+                    return { book: nextBook, chapter: 1 };
+                }
+            }
+            
+            return null;
+        }
+        
         // 성경책 옵션 생성
         function generateBookOptions() {
             bookSelect.innerHTML = '<option value="" disabled selected>성경책을 선택하세요</option>';
@@ -914,48 +948,66 @@
                 }
                 
                 // 날짜 정보
-                let startDate = dateInput.value ? new Date(dateInput.value) : new Date();
+                let currentDate = dateInput.value ? new Date(dateInput.value) : new Date();
                 
                 // 컨테이너 초기화
                 devotionalContainer.innerHTML = '';
                 
-                // 3일 동안 반복
-                for (let i = 0; i < 3; i++) {
-                    const currentDate = new Date(startDate);
-                    currentDate.setDate(startDate.getDate() + i);
-                    
-                    const currentChapter = selectedChapter + i;
-                    const currentSecondChapter = secondSelectedChapter ? secondSelectedChapter + i : null;
+                // 현재 성경책과 장 추적
+                let currentBookInfo = { book: selectedBook, chapter: selectedChapter };
+                let currentSecondBookInfo = secondSelectedBook ? 
+                    { book: secondSelectedBook, chapter: secondSelectedChapter } : null;
+                
+                // 3일치 생성
+                let daysGenerated = 0;
+                let attempts = 0;
+                const maxAttempts = 10; // 무한 루프 방지
+                
+                while (daysGenerated < 3 && attempts < maxAttempts) {
+                    attempts++;
                     
                     // 날짜 포맷
                     const dateInfo = formatDateString(currentDate.toISOString().split('T')[0]);
                     
-                    // 일요일인 경우
+                    // 일요일인 경우 건너뛰기
                     if (dateInfo.weekdayIndex === 0) {
-                        const sundayText = `🍚오늘의 만나🍚 - ${dateInfo.formattedDate}\n\n오늘은 일요일입니다.\n주일 전해지는 말씀으로 풍성한 하루 되시길 바랍니다.`;
-                        
-                        const container = createDevotionalContainer(i, dateInfo.formattedDate, sundayText, sundayText);
-                        devotionalContainer.appendChild(container);
+                        currentDate.setDate(currentDate.getDate() + 1);
                         continue;
                     }
                     
                     // 첫 번째 성경 데이터 확인
-                    const chapterData = bibleData[selectedBook]?.[currentChapter.toString()];
+                    const chapterData = bibleData[currentBookInfo.book]?.[currentBookInfo.chapter.toString()];
                     if (!chapterData) {
-                        const errorText = `${selectedBook} ${currentChapter}장의 데이터를 찾을 수 없습니다.`;
-                        const container = createDevotionalContainer(i, dateInfo.formattedDate, errorText, errorText);
+                        const errorText = `${currentBookInfo.book} ${currentBookInfo.chapter}장의 데이터를 찾을 수 없습니다.`;
+                        const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, errorText, errorText);
                         devotionalContainer.appendChild(container);
+                        daysGenerated++;
+                        currentDate.setDate(currentDate.getDate() + 1);
+                        
+                        // 다음 성경책으로 이동
+                        const nextBook = getNextBookAndChapter(currentBookInfo.book, currentBookInfo.chapter);
+                        if (nextBook) {
+                            currentBookInfo = nextBook;
+                        }
                         continue;
                     }
                     
                     // 두 번째 성경 데이터 확인 (선택적)
                     let secondChapterData = null;
-                    if (secondSelectedBook && currentSecondChapter) {
-                        secondChapterData = bibleData[secondSelectedBook]?.[currentSecondChapter.toString()];
+                    if (currentSecondBookInfo) {
+                        secondChapterData = bibleData[currentSecondBookInfo.book]?.[currentSecondBookInfo.chapter.toString()];
                         if (!secondChapterData) {
-                            const errorText = `${secondSelectedBook} ${currentSecondChapter}장의 데이터를 찾을 수 없습니다.`;
-                            const container = createDevotionalContainer(i, dateInfo.formattedDate, errorText, errorText);
+                            const errorText = `${currentSecondBookInfo.book} ${currentSecondBookInfo.chapter}장의 데이터를 찾을 수 없습니다.`;
+                            const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, errorText, errorText);
                             devotionalContainer.appendChild(container);
+                            daysGenerated++;
+                            currentDate.setDate(currentDate.getDate() + 1);
+                            
+                            // 다음 성경책으로 이동
+                            const nextSecondBook = getNextBookAndChapter(currentSecondBookInfo.book, currentSecondBookInfo.chapter);
+                            if (nextSecondBook) {
+                                currentSecondBookInfo = nextSecondBook;
+                            }
                             continue;
                         }
                     }
@@ -963,17 +1015,46 @@
                     // 묵상 텍스트 생성
                     const devotionalText = createDevotionalText(
                         dateInfo,
-                        selectedBook,
-                        currentChapter,
+                        currentBookInfo.book,
+                        currentBookInfo.chapter,
                         chapterData,
-                        secondSelectedBook,
-                        currentSecondChapter,
+                        currentSecondBookInfo?.book,
+                        currentSecondBookInfo?.chapter,
                         secondChapterData
                     );
                     
                     // 컨테이너 생성 및 추가
-                    const container = createDevotionalContainer(i, dateInfo.formattedDate, devotionalText.raw, devotionalText.formatted);
+                    const container = createDevotionalContainer(daysGenerated, dateInfo.formattedDate, devotionalText.raw, devotionalText.formatted);
                     devotionalContainer.appendChild(container);
+                    
+                    daysGenerated++;
+                    
+                    // 다음 날짜로 이동
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    
+                    // 다음 성경책과 장으로 이동
+                    const nextBook = getNextBookAndChapter(currentBookInfo.book, currentBookInfo.chapter);
+                    if (nextBook) {
+                        currentBookInfo = nextBook;
+                    } else {
+                        // 더 이상 다음 책이 없으면 종료
+                        break;
+                    }
+                    
+                    // 두 번째 성경책도 다음으로 이동
+                    if (currentSecondBookInfo) {
+                        const nextSecondBook = getNextBookAndChapter(currentSecondBookInfo.book, currentSecondBookInfo.chapter);
+                        if (nextSecondBook) {
+                            currentSecondBookInfo = nextSecondBook;
+                        } else {
+                            // 더 이상 다음 책이 없으면 두 번째 성경책 비활성화
+                            currentSecondBookInfo = null;
+                        }
+                    }
+                }
+                
+                if (daysGenerated === 0) {
+                    devotionalContainer.innerHTML = '<div class="devotional">묵상을 생성할 수 없습니다. 성경 데이터를 확인해주세요.</div>';
                 }
                 
             } catch (error) {
