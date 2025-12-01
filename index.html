@@ -113,6 +113,24 @@
             cursor: not-allowed;
         }
         
+        /* 버튼 그룹 */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button-group button {
+            flex: 1;
+            margin-top: 0;
+        }
+        
+        #generate3DaysButton {
+            background-color: #28a745;
+        }
+        #generate3DaysButton:hover {
+            background-color: #218838;
+        }
+        
         /* 복사 버튼 */
         .copy-button {
             background-color: #28a745;
@@ -138,6 +156,10 @@
         /* 묵상 영역 */
         .devotional-container {
             position: relative;
+            margin-bottom: 20px;
+        }
+        .devotional-container:last-child {
+            margin-bottom: 0;
         }
         .devotional {
             white-space: pre-wrap;
@@ -146,6 +168,12 @@
             background-color: #f8f9fa;
             border-radius: 5px;
             border-left: 4px solid #4682B4;
+        }
+        .devotional-date-header {
+            font-weight: 600;
+            color: #4682B4;
+            margin-bottom: 10px;
+            font-size: 18px;
         }
         strong {
             color: #366b96;
@@ -387,16 +415,21 @@
                     </select>
                 </div>
                 
-                <button id="generateButton">묵상 생성하기</button>
+                <div class="button-group">
+                    <button id="generateButton">묵상 생성하기</button>
+                    <button id="generate3DaysButton">3일 연속 생성하기</button>
+                </div>
             </div>
             
             <div class="column">
                 <h2>오늘의 만나</h2>
-                <div class="devotional-container">
-                    <div id="devotional" class="devotional">
-                        성경책과 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.
+                <div id="devotionalContainer">
+                    <div class="devotional-container">
+                        <div id="devotional" class="devotional">
+                            성경책과 장을 선택한 후 "묵상 생성하기" 버튼을 클릭하세요.
+                        </div>
+                        <button id="copyButton" class="copy-button">📋 복사하기</button>
                     </div>
-                    <button id="copyButton" class="copy-button">📋 복사하기</button>
                 </div>
             </div>
         </div>
@@ -420,6 +453,8 @@
         const secondBookSelect = document.getElementById('secondBook');
         const secondChapterSelect = document.getElementById('secondChapter');
         const generateButton = document.getElementById('generateButton');
+        const generate3DaysButton = document.getElementById('generate3DaysButton');
+        const devotionalContainer = document.getElementById('devotionalContainer');
         const devotionalElement = document.getElementById('devotional');
         const copyButton = document.getElementById('copyButton');
         const copyMessage = document.getElementById('copyMessage');
@@ -532,6 +567,7 @@
             secondBookSelect.addEventListener('change', updateSecondChapterOptions);
             secondChapterSelect.addEventListener('change', checkFormValidity);
             generateButton.addEventListener('click', generateDevotional);
+            generate3DaysButton.addEventListener('click', generate3DaysDevotional);
             copyButton.addEventListener('click', copyDevotionalText);
             
             // 초기 폼 상태 확인
@@ -664,7 +700,9 @@
             const isSecondValid = !secondBookSelect.value || 
                                 (secondBookSelect.value && secondChapterSelect.value);
             
-            generateButton.disabled = !(isValid && isSecondValid);
+            const formValid = isValid && isSecondValid;
+            generateButton.disabled = !formValid;
+            generate3DaysButton.disabled = !formValid;
         }
         
         // 날짜 문자열 포맷 변환 (YYYY-MM-DD -> M/D(요일))
@@ -853,6 +891,203 @@
                 // 오류 시 복사 버튼 숨김
                 copyButton.style.display = 'none';
             }
+        }
+        
+        // 3일 연속 묵상 생성
+        function generate3DaysDevotional() {
+            try {
+                // 입력값 확인
+                const selectedBook = bookSelect.value;
+                const selectedChapter = parseInt(chapterSelect.value);
+                const secondSelectedBook = secondBookSelect.value;
+                const secondSelectedChapter = parseInt(secondChapterSelect.value) || null;
+                
+                if (!selectedBook || !selectedChapter) {
+                    alert('성경책과 장을 선택해주세요.');
+                    return;
+                }
+                
+                // 두 번째 성경책이 선택되었지만 장이 선택되지 않은 경우
+                if (secondSelectedBook && !secondSelectedChapter) {
+                    alert('두 번째 성경책을 선택한 경우 장도 선택해주세요.');
+                    return;
+                }
+                
+                // 날짜 정보
+                let startDate = dateInput.value ? new Date(dateInput.value) : new Date();
+                
+                // 컨테이너 초기화
+                devotionalContainer.innerHTML = '';
+                
+                // 3일 동안 반복
+                for (let i = 0; i < 3; i++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + i);
+                    
+                    const currentChapter = selectedChapter + i;
+                    const currentSecondChapter = secondSelectedChapter ? secondSelectedChapter + i : null;
+                    
+                    // 날짜 포맷
+                    const dateInfo = formatDateString(currentDate.toISOString().split('T')[0]);
+                    
+                    // 일요일인 경우
+                    if (dateInfo.weekdayIndex === 0) {
+                        const sundayText = `🍚오늘의 만나🍚 - ${dateInfo.formattedDate}\n\n오늘은 일요일입니다.\n주일 전해지는 말씀으로 풍성한 하루 되시길 바랍니다.`;
+                        
+                        const container = createDevotionalContainer(i, dateInfo.formattedDate, sundayText, sundayText);
+                        devotionalContainer.appendChild(container);
+                        continue;
+                    }
+                    
+                    // 첫 번째 성경 데이터 확인
+                    const chapterData = bibleData[selectedBook]?.[currentChapter.toString()];
+                    if (!chapterData) {
+                        const errorText = `${selectedBook} ${currentChapter}장의 데이터를 찾을 수 없습니다.`;
+                        const container = createDevotionalContainer(i, dateInfo.formattedDate, errorText, errorText);
+                        devotionalContainer.appendChild(container);
+                        continue;
+                    }
+                    
+                    // 두 번째 성경 데이터 확인 (선택적)
+                    let secondChapterData = null;
+                    if (secondSelectedBook && currentSecondChapter) {
+                        secondChapterData = bibleData[secondSelectedBook]?.[currentSecondChapter.toString()];
+                        if (!secondChapterData) {
+                            const errorText = `${secondSelectedBook} ${currentSecondChapter}장의 데이터를 찾을 수 없습니다.`;
+                            const container = createDevotionalContainer(i, dateInfo.formattedDate, errorText, errorText);
+                            devotionalContainer.appendChild(container);
+                            continue;
+                        }
+                    }
+                    
+                    // 묵상 텍스트 생성
+                    const devotionalText = createDevotionalText(
+                        dateInfo,
+                        selectedBook,
+                        currentChapter,
+                        chapterData,
+                        secondSelectedBook,
+                        currentSecondChapter,
+                        secondChapterData
+                    );
+                    
+                    // 컨테이너 생성 및 추가
+                    const container = createDevotionalContainer(i, dateInfo.formattedDate, devotionalText.raw, devotionalText.formatted);
+                    devotionalContainer.appendChild(container);
+                }
+                
+            } catch (error) {
+                console.error('3일 연속 묵상 생성 중 오류 발생:', error);
+                devotionalContainer.innerHTML = `<div class="devotional">오류 발생: ${error.message}</div>`;
+            }
+        }
+        
+        // 묵상 컨테이너 생성
+        function createDevotionalContainer(index, dateStr, rawText, formattedText) {
+            const container = document.createElement('div');
+            container.className = 'devotional-container';
+            
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'devotional-date-header';
+            dateHeader.textContent = `📅 ${dateStr}`;
+            
+            const devotional = document.createElement('div');
+            devotional.className = 'devotional';
+            devotional.innerHTML = formattedText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-button';
+            copyBtn.style.display = 'block';
+            copyBtn.textContent = '📋 복사하기';
+            copyBtn.onclick = function() {
+                copySpecificDevotional(rawText, copyBtn);
+            };
+            
+            container.appendChild(dateHeader);
+            container.appendChild(devotional);
+            container.appendChild(copyBtn);
+            
+            return container;
+        }
+        
+        // 묵상 텍스트 생성
+        function createDevotionalText(dateInfo, book, chapter, chapterData, secondBook, secondChapter, secondChapterData) {
+            let rawText = '';
+            
+            // 날짜 정보
+            rawText += `🍚오늘의 만나🍚 - ${dateInfo.formattedDate}\n\n`;
+            
+            // 선택된 성경책 정보
+            if (secondBook && secondChapter) {
+                rawText += `${book} ${chapter}장 및 ${secondBook} ${secondChapter}장 입니다\n`;
+            } else {
+                rawText += `${book} ${chapter}장 입니다\n`;
+            }
+            rawText += "------------------------------------------------\n\n";
+            
+            // 첫 번째 성경 내용
+            rawText += `**${book} ${chapter}장**\n\n`;
+            const verses = [];
+            const sortedVerseNumbers = Object.keys(chapterData)
+                .map(verse => parseInt(verse))
+                .sort((a, b) => a - b);
+            
+            for (const verseNum of sortedVerseNumbers) {
+                verses.push(`${verseNum}. ${chapterData[verseNum.toString()]}`);
+            }
+            rawText += verses.join('\n\n');
+            
+            // 두 번째 성경 내용 (선택적)
+            if (secondChapterData) {
+                rawText += '\n\n';
+                rawText += "----------------------------------------\n\n";
+                rawText += `**${secondBook} ${secondChapter}장**\n\n`;
+                const secondVerses = [];
+                const sortedSecondVerseNumbers = Object.keys(secondChapterData)
+                    .map(verse => parseInt(verse))
+                    .sort((a, b) => a - b);
+                
+                for (const verseNum of sortedSecondVerseNumbers) {
+                    secondVerses.push(`${verseNum}. ${secondChapterData[verseNum.toString()]}`);
+                }
+                rawText += secondVerses.join('\n\n');
+            }
+            
+            rawText += '\n\n';
+            rawText += "------------------------------------------------\n\n";
+            rawText += "💌묵상방법(참고)💌\n";
+            rawText += "1. 시작기도🙏 후 말씀 읽기(천천히 깊게)\n\n\n";
+            rawText += "2. 묵상하기\n";
+            rawText += "👉나에게 묵상되는 말씀범위(구절)의 \"핵심제목<Keyword >\" 적어보기\n";
+            rawText += "👉\"핵심제목<Keyword >\" 에 맞는 묵상, 주님과의 약속/구체적 실천계획 세워보기\n\n\n";
+            rawText += "3. 마무리기도🙏 후 댓글로 묵상 나누기 (말씀구절/묵상/실천 등을 댓글로 달아 공유해주시면 좋습니다!)\n";
+            rawText += "------------------------------------------------";
+            
+            return { raw: rawText, formatted: rawText };
+        }
+        
+        // 특정 묵상 복사
+        function copySpecificDevotional(text, button) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '✓ 복사됨';
+                    button.classList.add('copied');
+                    showCopyMessage();
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.classList.remove('copied');
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('클립보드 복사 실패:', err);
+                    button.textContent = '❌ 복사 실패';
+                    
+                    setTimeout(() => {
+                        button.textContent = '📋 복사하기';
+                    }, 3000);
+                });
         }
         
         // 묵상 내용 복사 기능
