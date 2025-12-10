@@ -690,7 +690,7 @@
         margin-bottom: var(--spacing-sm);
     }
 
-    /* 복사 버튼 그룹 (3일 연속용) */
+    /* 복사 버튼 그룹 (6일 연속용) */
     .copy-buttons-group {
         display: flex;
         gap: var(--spacing-sm);
@@ -911,9 +911,9 @@
                             <span>✨</span>
                             <span>묵상 생성</span>
                         </button>
-                        <button id="generate3DaysButton" class="btn btn-accent btn-lg" disabled>
+                        <button id="generate6DaysButton" class="btn btn-accent btn-lg" disabled>
                             <span>📅</span>
-                            <span>3일 연속</span>
+                            <span>6일 연속</span>
                         </button>
                     </div>
                 </div>
@@ -1011,7 +1011,7 @@
                 secondBookSelect: document.getElementById('secondBook'),
                 secondChapterSelect: document.getElementById('secondChapter'),
                 generateButton: document.getElementById('generateButton'),
-                generate3DaysButton: document.getElementById('generate3DaysButton'),
+                generate6DaysButton: document.getElementById('generate6DaysButton'),
                 devotionalContainer: document.getElementById('devotionalContainer'),
                 devotional: document.getElementById('devotional'),
                 copyButton: document.getElementById('copyButton'),
@@ -1041,7 +1041,7 @@
                 this.saveSettings();
             });
             elements.generateButton.addEventListener('click', () => this.generateDevotional());
-            elements.generate3DaysButton.addEventListener('click', () => this.generate3DaysDevotional());
+            elements.generate6DaysButton.addEventListener('click', () => this.generate6DaysDevotional());
             elements.copyButton.addEventListener('click', () => this.copyDevotionalText());
             elements.dateInput.addEventListener('keydown', (e) => this.handleDateKeydown(e));
             elements.dateInput.addEventListener('change', () => this.saveSettings());
@@ -1367,14 +1367,14 @@
         },
 
         checkFormValidity() {
-            const { bookSelect, chapterSelect, secondBookSelect, secondChapterSelect, generateButton, generate3DaysButton } = this.elements;
+            const { bookSelect, chapterSelect, secondBookSelect, secondChapterSelect, generateButton, generate6DaysButton } = this.elements;
 
             const isValid = bookSelect.value && chapterSelect.value;
             const isSecondValid = !secondBookSelect.value || (secondBookSelect.value && secondChapterSelect.value);
             const formValid = isValid && isSecondValid;
 
             generateButton.disabled = !formValid;
-            generate3DaysButton.disabled = !formValid;
+            generate6DaysButton.disabled = !formValid;
         },
 
         // ========== 성경책 네비게이션 ==========
@@ -1643,8 +1643,8 @@
             document.getElementById('copyButton').addEventListener('click', () => this.copyDevotionalText());
         },
 
-        // ========== 3일 연속 생성 ==========
-        generate3DaysDevotional() {
+        // ========== 6일 연속 생성 ==========
+        generate6DaysDevotional() {
             try {
                 const { bookSelect, chapterSelect, secondBookSelect, secondChapterSelect, dateInput, devotionalContainer } = this.elements;
                 const { bibleData } = this.state;
@@ -1669,7 +1669,7 @@
                 const devotionalData = [];
                 let attempts = 0;
 
-                while (devotionalData.length < 3 && attempts < 10) {
+                while (devotionalData.length < 6 && attempts < 10) {
                     attempts++;
 
                     const dateInfo = this.formatDateString(currentDate.toISOString().split('T')[0]);
@@ -1758,7 +1758,7 @@
                 this.copySpecificDevotional(0);
 
             } catch (error) {
-                console.error('3일 연속 생성 오류:', error);
+                console.error('6일 연속 생성 오류:', error);
                 this.showToast('error', `오류: ${error.message}`);
             }
         },
